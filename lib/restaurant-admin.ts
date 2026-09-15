@@ -51,6 +51,22 @@ export function validateRestaurantInput(
   if (!description) return { ok: false, error: "Mô tả bắt buộc" };
   if (!address) return { ok: false, error: "Địa chỉ bắt buộc" };
   if (!imageUrl) return { ok: false, error: "Ảnh quán bắt buộc" };
+  if (imageUrl.startsWith("data:")) {
+    return {
+      ok: false,
+      error: "Không dùng ảnh dạng data URL — hãy dán link https hoặc đường dẫn /restaurants/...",
+    };
+  }
+  if (
+    !imageUrl.startsWith("/") &&
+    !imageUrl.startsWith("https://") &&
+    !imageUrl.startsWith("http://")
+  ) {
+    return {
+      ok: false,
+      error: "URL ảnh phải là đường dẫn /... hoặc link http(s)://...",
+    };
+  }
 
   const slug = slugRaw || slugifyName(name);
   if (!slug) return { ok: false, error: "Slug không hợp lệ" };

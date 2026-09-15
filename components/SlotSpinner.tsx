@@ -132,7 +132,7 @@ export function SlotSpinner({
       <div className="section-label">01 — Chọn nhanh</div>
       <div className="spinner-layout">
         <div className="section-intro">
-          <h2 id="spin-heading">Hôm nay ăn trưa gì?</h2>
+          <h2 id="spin-heading">Trưa nay ăn gì?</h2>
           <p>
             Quay chọn quán trưa — thanh cuộn ngang, kim giữa chốt kết quả. Thời
             tiết chỉ gợi ý riêng, không ảnh hưởng vòng quay.

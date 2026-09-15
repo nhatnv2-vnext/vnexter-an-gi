@@ -123,7 +123,7 @@ export function WeatherSuggestion() {
                 ? "Chưa đọc được thời tiết"
                 : "Đang xem thời tiết Trung Kính..."}
           </p>
-          <h2 id="weather-heading">Gợi ý ăn trưa theo trời</h2>
+          <h2 id="weather-heading">Gợi ý ăn trưa theo thời tiết</h2>
           <p className="weather-suggestion">
             {weather?.suggestionText ??
               (failed

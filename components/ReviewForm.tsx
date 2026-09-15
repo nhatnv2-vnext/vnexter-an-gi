@@ -105,7 +105,7 @@ export function ReviewForm({
             maxLength={40}
             value={authorName}
             onChange={(event) => setAuthorName(event.target.value)}
-            placeholder="Ví dụ: Minh"
+            placeholder="Ví dụ: Phương Tuấn"
           />
         </label>
         <label>

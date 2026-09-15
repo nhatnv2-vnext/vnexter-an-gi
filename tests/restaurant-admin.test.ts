@@ -23,4 +23,35 @@ describe("validateRestaurantInput", () => {
       expect(result.data.tags).toEqual(["bun", "trua"]);
     }
   });
+
+  it("keeps newlines and emoji in description", () => {
+    const result = validateRestaurantInput({
+      name: "Test",
+      description: "Có cơm rang\nNên ăn 😋",
+      address: "Trung Kính",
+      imageUrl: "/restaurants/x.jpg",
+    });
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.data.description).toBe("Có cơm rang\nNên ăn 😋");
+    }
+  });
+
+  it("accepts https image URLs and rejects data URLs", () => {
+    const ok = validateRestaurantInput({
+      name: "Test",
+      description: "Mô tả",
+      address: "Trung Kính",
+      imageUrl: "https://example.com/food.jpg",
+    });
+    expect(ok.ok).toBe(true);
+
+    const bad = validateRestaurantInput({
+      name: "Test",
+      description: "Mô tả",
+      address: "Trung Kính",
+      imageUrl: "data:image/jpeg;base64,abc",
+    });
+    expect(bad.ok).toBe(false);
+  });
 });

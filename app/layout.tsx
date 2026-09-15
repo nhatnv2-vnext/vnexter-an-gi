@@ -1,17 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Be_Vietnam_Pro, Manrope } from "next/font/google";
+import { Be_Vietnam_Pro } from "next/font/google";
 import "./globals.css";
 
-const bodyFont = Be_Vietnam_Pro({
+const brandFont = Be_Vietnam_Pro({
   variable: "--font-body",
   subsets: ["vietnamese", "latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const displayFont = Manrope({
-  variable: "--font-display",
-  subsets: ["vietnamese", "latin"],
-  weight: ["600", "700", "800"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -33,7 +27,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="vi" className={`${bodyFont.variable} ${displayFont.variable}`}>
+    <html lang="vi" className={brandFont.variable}>
       <body>
         <div className="site-atmosphere">{children}</div>
       </body>

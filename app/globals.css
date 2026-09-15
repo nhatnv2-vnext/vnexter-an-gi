@@ -14,6 +14,7 @@
   --mint: rgba(255, 106, 26, 0.12);
   --line: rgba(255, 255, 255, 0.12);
   --accent-gradient: linear-gradient(105deg, #ff6a1a 0%, #ff9a4d 100%);
+  --font-display: var(--font-body);
 }
 
 * {
@@ -34,6 +35,9 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-body), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   overflow-x: hidden;
   overflow-x: clip;
   position: relative;
@@ -158,10 +162,10 @@ button {
   max-width: min(900px, 100%);
   margin: 1.5rem 0 1.25rem;
   font-family: var(--font-display), sans-serif;
-  font-size: clamp(3.6rem, 10vw, 7.5rem);
+  font-size: clamp(3.4rem, 9vw, 6.8rem);
   font-weight: 700;
-  letter-spacing: -0.055em;
-  line-height: 0.92;
+  letter-spacing: 0.01em;
+  line-height: 1.22;
   color: #fff;
   animation: arrive 0.8s 0.08s both;
   overflow-wrap: anywhere;
@@ -169,6 +173,7 @@ button {
 
 .hero h1 span {
   display: block;
+  margin-top: 0.08em;
   margin-left: 0;
   background: var(--accent-gradient);
   -webkit-background-clip: text;
@@ -254,9 +259,10 @@ button {
 .restaurants-heading h2 {
   margin: 0;
   font-family: var(--font-display), sans-serif;
-  font-size: clamp(2.2rem, 4.5vw, 3.8rem);
-  letter-spacing: -0.04em;
-  line-height: 1.05;
+  font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
   color: #fff;
 }
 
@@ -411,10 +417,11 @@ button {
   max-width: 7.5rem;
   overflow: hidden;
   color: rgba(245, 245, 245, 0.88);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  line-height: 1.25;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.35;
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -580,8 +587,9 @@ button {
   margin: 0;
   font-family: var(--font-display), sans-serif;
   font-size: clamp(1.7rem, 4vw, 2.35rem);
-  letter-spacing: -0.04em;
-  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
   color: #fff;
   text-shadow: 0 0 24px rgba(255, 106, 26, 0.35);
 }
@@ -741,7 +749,7 @@ button {
   font-family: var(--font-display), sans-serif;
   font-size: clamp(3.4rem, 8vw, 4.4rem);
   font-weight: 800;
-  letter-spacing: -0.06em;
+  letter-spacing: 0;
 }
 
 .weather-card-temp span {
@@ -901,8 +909,10 @@ button {
 .restaurant-copy h3 {
   margin: 0.45rem 0 0.75rem;
   font-family: var(--font-display), sans-serif;
-  font-size: clamp(1.6rem, 3vw, 2.5rem);
-  letter-spacing: -0.04em;
+  font-size: clamp(1.55rem, 2.8vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.35;
 }
 
 .restaurant-copy > p:not(.restaurant-rating) {
@@ -912,6 +922,8 @@ button {
   overflow: hidden;
   color: rgba(249, 247, 233, 0.65);
   line-height: 1.65;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
@@ -977,9 +989,10 @@ button {
   max-width: 48rem;
   margin: 1.2rem 0 1.5rem;
   font-family: var(--font-display), sans-serif;
-  font-size: clamp(3.7rem, 8vw, 7.4rem);
-  letter-spacing: -0.07em;
-  line-height: 0.86;
+  font-size: clamp(3.2rem, 7vw, 5.6rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
 }
 
 .detail-description {
@@ -987,6 +1000,10 @@ button {
   color: var(--ink-soft);
   font-size: clamp(1rem, 1.4vw, 1.16rem);
   line-height: 1.8;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  font-family: var(--font-body), "Apple Color Emoji", "Segoe UI Emoji",
+    "Noto Color Emoji", sans-serif;
 }
 
 .detail-address {
@@ -1082,9 +1099,10 @@ button {
 .reviews-heading h2 {
   margin: 0;
   font-family: var(--font-display), sans-serif;
-  font-size: clamp(2.3rem, 5vw, 4.6rem);
-  letter-spacing: -0.055em;
-  line-height: 0.95;
+  font-size: clamp(2.1rem, 4.5vw, 3.6rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
 }
 
 .review-form form,
@@ -1436,7 +1454,7 @@ button {
 
   .hero h1 {
     font-size: clamp(2.5rem, 12vw, 3.6rem);
-    line-height: 0.98;
+    line-height: 1.15;
     margin: 1.1rem 0 0.9rem;
     max-width: 100%;
   }
@@ -1638,8 +1656,10 @@ button {
 
   .restaurant-copy h3 {
     margin: 0;
-    font-size: 0.92rem;
-    line-height: 1.25;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.35;
   }
 
   .restaurant-copy h3 a {
@@ -1703,7 +1723,7 @@ button {
 
   .detail-copy h1 {
     font-size: clamp(2.1rem, 10vw, 3.2rem);
-    line-height: 0.98;
+    line-height: 1.18;
     margin: 0.8rem 0 1rem;
   }
 
@@ -1988,6 +2008,31 @@ button {
   font-weight: 700;
 }
 
+.admin-field-hint {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #5c5f57;
+}
+
+.admin-image-fields {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid rgba(26, 28, 24, 0.12);
+}
+
+.admin-image-fields legend {
+  padding: 0 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.admin-image-fields code {
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
 .admin-form input,
 .admin-form textarea {
   width: 100%;
@@ -1996,6 +2041,15 @@ button {
   background: #fffef9;
   font: inherit;
   font-weight: 400;
+  font-family: var(--font-body), "Apple Color Emoji", "Segoe UI Emoji",
+    "Noto Color Emoji", sans-serif;
+}
+
+.admin-form textarea {
+  min-height: 8rem;
+  resize: vertical;
+  line-height: 1.55;
+  white-space: pre-wrap;
 }
 
 .admin-form-actions {

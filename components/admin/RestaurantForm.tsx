@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useState } from "react";
 import { slugifyName } from "@/lib/restaurant-admin";
 
 type Props = {
@@ -31,7 +30,7 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
 
-  const previewUrl = useMemo(() => imageUrl, [imageUrl]);
+  const previewUrl = imageUrl.trim();
 
   function onNameChange(value: string) {
     setName(value);
@@ -108,11 +107,15 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
       <label>
         Mô tả
         <textarea
-          rows={4}
+          rows={6}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          placeholder={"Có cơm rang, phở bò.\nNên ăn cơm rang 3 chỉ 😋"}
           required
         />
+        <span className="admin-field-hint">
+          Enter để xuống dòng — hiển thị đúng trên site. Emoji cũng dùng được.
+        </span>
       </label>
       <label>
         Địa chỉ
@@ -126,35 +129,39 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
           placeholder="bun, nong, trua"
         />
       </label>
-      <label>
-        Ảnh quán
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/webp,image/gif"
-          onChange={(e) => onUpload(e.target.files?.[0] ?? null)}
-        />
-      </label>
-      <label>
-        URL ảnh
-        <input
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          placeholder="/restaurants/... hoặc URL Blob"
-          required
-        />
-      </label>
-      {previewUrl && (
-        <div className="admin-preview">
-          <Image
-            src={previewUrl}
-            alt=""
-            width={180}
-            height={180}
-            unoptimized={previewUrl.startsWith("http")}
+      <fieldset className="admin-image-fields">
+        <legend>Ảnh quán</legend>
+        <p className="admin-muted">
+          Dán URL ảnh là đủ — không bắt buộc upload. Ví dụ:{" "}
+          <code>/restaurants/img-8824.jpg</code>,{" "}
+          <code>/restaurants/img-8825.jpg</code>, hoặc link{" "}
+          <code>https://...</code> công khai.
+        </p>
+        <label>
+          URL ảnh
+          <input
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+            placeholder="https://... hoặc /restaurants/img-8824.jpg"
+            required
           />
-        </div>
-      )}
-      {uploading && <p className="admin-muted">Đang upload...</p>}
+        </label>
+        <label>
+          Hoặc upload file (Vercel Blob)
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            onChange={(e) => onUpload(e.target.files?.[0] ?? null)}
+          />
+        </label>
+        {previewUrl && !previewUrl.startsWith("data:") && (
+          <div className="admin-preview">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={previewUrl} alt="" width={180} height={180} />
+          </div>
+        )}
+        {uploading && <p className="admin-muted">Đang upload...</p>}
+      </fieldset>
       {error && <p className="admin-error">{error}</p>}
       <div className="admin-form-actions">
         <button type="submit" className="admin-btn primary" disabled={saving || uploading}>
