@@ -57,3 +57,27 @@ export const TRUNG_KINH_COORDS = { latitude: 21.0139, longitude: 105.7965 };
 
 export const DEFAULT_LUNCH_FALLBACK =
   "Không lấy được thời tiết. Gợi ý mặc định cho bữa trưa: phở bò quanh 219 Trung Kính.";
+
+export async function fetchOpenMeteoCurrent(): Promise<{
+  tempC: number;
+  weatherCode: number;
+}> {
+  const { latitude, longitude } = TRUNG_KINH_COORDS;
+  const url = new URL("https://api.open-meteo.com/v1/forecast");
+  url.searchParams.set("latitude", String(latitude));
+  url.searchParams.set("longitude", String(longitude));
+  url.searchParams.set("current", "temperature_2m,weather_code");
+  url.searchParams.set("timezone", "Asia/Ho_Chi_Minh");
+
+  const res = await fetch(url.toString(), { next: { revalidate: 600 } });
+  if (!res.ok) throw new Error(`Open-Meteo ${res.status}`);
+  const data = (await res.json()) as {
+    current?: { temperature_2m?: number; weather_code?: number };
+  };
+  const tempC = data.current?.temperature_2m;
+  const weatherCode = data.current?.weather_code;
+  if (typeof tempC !== "number" || typeof weatherCode !== "number") {
+    throw new Error("Open-Meteo payload missing current weather");
+  }
+  return { tempC, weatherCode };
+}
