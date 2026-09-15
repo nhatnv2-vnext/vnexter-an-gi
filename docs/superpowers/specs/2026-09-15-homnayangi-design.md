@@ -2,11 +2,12 @@
 
 **Date:** 2026-09-15  
 **Status:** Approved for planning  
-**Location focus:** Quán ăn quanh 219 Trung Kính, Hà Nội
+**Location focus:** Quán ăn trưa quanh 219 Trung Kính, Hà Nội  
+**Meal focus:** Ăn trưa (lunch) — copy, seed, và gợi ý thời tiết đều hướng tới bữa trưa gần văn phòng/đi bộ quanh Trung Kính
 
 ## Goal
 
-App Next.js giúp chọn quán ăn quanh 219 Trung Kính: quay số kiểu slot/gacha, xem chi tiết quán, review 5 sao, và một section gợi ý riêng dựa trên thời tiết hiện tại. Deploy lên Vercel với Neon Postgres.
+App Next.js giúp chọn **quán ăn trưa** quanh 219 Trung Kính: quay số kiểu slot/gacha, xem chi tiết quán, review 5 sao, và một section gợi ý riêng dựa trên thời tiết hiện tại (gợi ý món/quán phù hợp cho bữa trưa). Deploy lên Vercel với Neon Postgres.
 
 ## Decisions (locked)
 
@@ -14,10 +15,11 @@ App Next.js giúp chọn quán ăn quanh 219 Trung Kính: quay số kiểu slot/
 |-------|--------|
 | Framework | Next.js App Router |
 | Database | Neon Postgres + Prisma |
+| Meal focus | Ăn trưa quanh 219 Trung Kính |
 | Random UX | Slot / gacha animation (không phải bánh xe) |
 | Weather vs spin | Hai section độc lập; weather không bias/lọc vòng quay |
 | Reviews | Không login; 1 review / quán / browser via `visitor_id` cookie |
-| Seed data | Đúng 2 quán, gắn 2 ảnh HEIC đã có trong repo (convert → WebP) |
+| Seed data | Đúng 2 quán ăn trưa, gắn 2 ảnh HEIC đã có trong repo (convert → WebP) |
 | Weather API | Open-Meteo (không API key), tọa độ cố định gần 219 Trung Kính |
 | Language | UI tiếng Việt |
 
@@ -40,9 +42,9 @@ Next.js (App Router) on Vercel
 
 ### `/` — Trang chủ
 
-1. **Hero:** brand “Hôm nay ăn gì” + một câu gần 219 Trung Kính.
-2. **Section Quay số:** nút “Quay ngay” → animation slot/gacha → quán thắng + CTA “Xem chi tiết”. Random thuần trong toàn bộ quán (2 quán → 50/50).
-3. **Section Thời tiết:** độc lập — điều kiện hiện tại + gợi ý món/quán phù hợp. Không ảnh hưởng vòng quay.
+1. **Hero:** brand “Hôm nay ăn gì” + một câu về **ăn trưa** gần 219 Trung Kính.
+2. **Section Quay số:** nút “Quay ngay” / “Hôm nay ăn trưa gì?” → animation slot/gacha → quán thắng + CTA “Xem chi tiết”. Random thuần trong toàn bộ quán (2 quán → 50/50).
+3. **Section Thời tiết:** độc lập — điều kiện hiện tại + gợi ý **món/quán ăn trưa** phù hợp. Không ảnh hưởng vòng quay.
 4. **Danh sách quán:** 2 item (ảnh, tên, rating trung bình) → link chi tiết.
 
 ### `/restaurants/[id]` — Chi tiết
@@ -71,9 +73,9 @@ Next.js (App Router) on Vercel
 | name | String | |
 | slug | String | unique |
 | description | String | |
-| address | String | quanh 219 Trung Kính |
+| address | String | quanh 219 Trung Kính (đi bộ/ăn trưa) |
 | imageUrl | String | path `/restaurants/...webp` |
-| tags | String[] | vd. `["pho","nong"]` — map weather tip |
+| tags | String[] | vd. `["pho","nong","trua"]` — map weather tip + meal context |
 | createdAt | DateTime | |
 
 ### `Review`
@@ -91,7 +93,7 @@ Next.js (App Router) on Vercel
 
 ### Seed
 
-- Đúng 2 restaurants.
+- Đúng 2 restaurants phù hợp **ăn trưa** (mô tả/copy nhấn bữa trưa gần 219 Trung Kính).
 - Convert `IMG_8824.HEIC` và `IMG_8825.HEIC` → WebP trong `public/restaurants/`.
 - Tags khác nhau đủ để weather mapping có quán/gợi ý tương ứng.
 
@@ -102,7 +104,7 @@ Next.js (App Router) on Vercel
 | GET | `/api/restaurants` | List + average rating + review count |
 | GET | `/api/restaurants/[id]` | Detail + reviews (mới nhất trước) |
 | POST | `/api/restaurants/[id]/reviews` | Tạo review; đọc/set cookie `visitor_id`; 409 nếu đã review |
-| GET | `/api/weather` | Proxy Open-Meteo → `{ condition, tempC, suggestionText, suggestedRestaurantId? }` |
+| GET | `/api/weather` | Proxy Open-Meteo → `{ condition, tempC, suggestionText, suggestedRestaurantId? }` — `suggestionText` luôn khung **ăn trưa** |
 
 ### Review validation
 
@@ -113,18 +115,18 @@ Next.js (App Router) on Vercel
 
 ### Weather mapping (code constants)
 
-| Condition (từ Open-Meteo) | Gợi ý ví dụ |
-|---------------------------|-------------|
-| Mưa / ẩm | Món nóng, phở bò; ưu tiên tag `pho` / `nong` |
-| Nắng nóng | Đồ mát / giải nhiệt; tag `mat` / `do-uong` |
-| Se lạnh | Món nóng, lẩu/phở; tag `nong` |
+| Condition (từ Open-Meteo) | Gợi ý ăn trưa (ví dụ) |
+|---------------------------|------------------------|
+| Mưa / ẩm | Trưa mưa → phở bò / món nóng; ưu tiên tag `pho` / `nong` |
+| Nắng nóng | Trưa nóng → món mát / nhẹ bụng; tag `mat` / `do-uong` |
+| Se lạnh | Trưa se lạnh → món nóng, lẩu/phở; tag `nong` |
 
-Khi không có quán khớp tag: vẫn hiện text gợi ý món, không bắt buộc gắn restaurant.
+Khi không có quán khớp tag: vẫn hiện text gợi ý món ăn trưa, không bắt buộc gắn restaurant.
 
 ## Edge cases
 
 - **2 quán quay số:** animation vẫn chạy; kết quả random đều.
-- **Weather API fail:** section hiện thông báo lỗi nhẹ + gợi ý mặc định (vd. phở bò quanh Trung Kính).
+- **Weather API fail:** section hiện thông báo lỗi nhẹ + gợi ý mặc định ăn trưa (vd. phở bò quanh Trung Kính).
 - **Review trùng:** API 409; UI không cho submit lại.
 - **HEIC:** chỉ dùng sau khi convert sang WebP lúc setup/seed.
 
@@ -137,8 +139,9 @@ Khi không có quán khớp tag: vẫn hiện text gợi ý món, không bắt b
 
 ## Success criteria
 
+- Copy/UI rõ ràng đây là app gợi ý **ăn trưa** quanh 219 Trung Kính.
 - User quay số và nhận 1 trong 2 quán với animation slot.
 - User mở chi tiết quán thấy ảnh, mô tả, địa chỉ.
 - User gửi review 5 sao; browser thứ hai vẫn gửi được; cùng browser không gửi trùng.
-- Section thời tiết riêng hiển thị điều kiện + gợi ý (hoặc fallback).
+- Section thời tiết riêng hiển thị điều kiện + gợi ý ăn trưa (hoặc fallback).
 - Deploy được lên Vercel với Neon.
