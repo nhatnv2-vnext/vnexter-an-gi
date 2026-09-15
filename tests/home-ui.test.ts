@@ -26,6 +26,15 @@ describe("home page UI", () => {
     expect(weather).toContain('fetch("/api/weather"');
   });
 
+  it("announces slot winner without live-updating the spin window", () => {
+    const spinner = projectFile("components/SlotSpinner.tsx");
+
+    expect(spinner).not.toMatch(/className=\{`slot-window[\s\S]*?\n\s*aria-live/);
+    expect(spinner).toContain('className="sr-only" aria-live="polite"');
+    expect(spinner).toContain("aria-hidden={spinning || undefined}");
+    expect(spinner).toContain("restaurants.length === 0");
+  });
+
   it("uses optimized images for restaurant list items", () => {
     const card = projectFile("components/RestaurantCard.tsx");
 

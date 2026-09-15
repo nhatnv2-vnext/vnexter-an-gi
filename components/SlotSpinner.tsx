@@ -67,18 +67,28 @@ export function SlotSpinner({
         <div className="slot-machine">
           <div
             className={`slot-window${spinning ? " is-spinning" : ""}`}
-            aria-live="polite"
+            aria-hidden={spinning || undefined}
           >
             <span className="slot-eyebrow">
               {spinning ? "Đang đảo món..." : winner ? "Chốt kèo trưa nay" : "Mời quay"}
             </span>
             <strong>{displayName}</strong>
           </div>
+          <p className="sr-only" aria-live="polite" aria-atomic="true">
+            {winner && !spinning ? `Chốt kèo trưa nay: ${winner.name}` : ""}
+          </p>
           <div className="slot-actions">
-            <button type="button" onClick={spin} disabled={spinning}>
+            <button
+              type="button"
+              onClick={spin}
+              disabled={spinning || restaurants.length === 0}
+            >
               <span>{spinning ? "Đang quay" : "Quay ngay"}</span>
               <span aria-hidden="true">↗</span>
             </button>
+            {restaurants.length === 0 && (
+              <p className="slot-empty">Chưa có quán để quay.</p>
+            )}
             {winner && (
               <Link className="result-link" href={`/restaurants/${winner.id}`}>
                 Xem quán vừa chọn
