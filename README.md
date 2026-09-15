@@ -18,4 +18,6 @@ Stack: Next.js + Prisma + Neon Postgres, deploy trên Vercel.
 4. **Dev** — `npm run dev` → http://localhost:3000
 5. **Vercel** — import repo, thêm cùng `DATABASE_URL`. Build chạy `prisma generate`, `prisma migrate deploy`, rồi `next build` (xem `package.json`).
 
+> Nếu `prisma migrate deploy` (local hoặc trong Vercel build) lỗi advisory lock khi dùng Neon pooler, hãy ưu tiên connection string **direct** (không pooled) cho bước migrate.
+
 Sau deploy, seed production một lần nếu cần: `npx prisma db seed` với `DATABASE_URL` trỏ Neon production.

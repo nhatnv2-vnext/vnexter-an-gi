@@ -19,12 +19,18 @@ export function ReviewForm({
   initialMyReview: MyReview | null;
 }) {
   const router = useRouter();
-  const [myReview, setMyReview] = useState(initialMyReview);
+  const [submittedReview, setSubmittedReview] = useState<{
+    restaurantId: string;
+    review: MyReview;
+  } | null>(null);
   const [rating, setRating] = useState(0);
   const [authorName, setAuthorName] = useState("");
   const [comment, setComment] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const myReview =
+    initialMyReview ??
+    (submittedReview?.restaurantId === restaurantId ? submittedReview.review : null);
 
   async function submitReview(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -41,11 +47,8 @@ export function ReviewForm({
       });
 
       if (response.status === 409) {
-        setMyReview({
-          rating,
-          authorName: authorName.trim() || null,
-          comment: comment.trim() || null,
-        });
+        setSubmittedReview(null);
+        setError("Bạn đã đánh giá quán này rồi");
         router.refresh();
         return;
       }
@@ -60,7 +63,7 @@ export function ReviewForm({
         return;
       }
 
-      setMyReview(body.review);
+      setSubmittedReview({ restaurantId, review: body.review });
       router.refresh();
     } catch {
       setError("Không thể kết nối. Vui lòng thử lại.");
@@ -110,6 +113,7 @@ export function ReviewForm({
           <textarea
             name="comment"
             rows={5}
+            maxLength={500}
             value={comment}
             onChange={(event) => setComment(event.target.value)}
             placeholder="Món nào ngon, phục vụ ra sao?"

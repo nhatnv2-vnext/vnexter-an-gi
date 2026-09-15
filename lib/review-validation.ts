@@ -18,7 +18,7 @@ export function validateCreateReview(
     if (typeof body.comment !== "string") {
       return { ok: false, error: "Comment không hợp lệ" };
     }
-    data.comment = body.comment.trim();
+    data.comment = body.comment.trim().slice(0, 500);
   }
 
   if (body.authorName !== undefined && body.authorName !== null && body.authorName !== "") {

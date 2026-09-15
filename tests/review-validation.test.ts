@@ -25,6 +25,18 @@ describe("validateCreateReview", () => {
     }
   });
 
+  it("caps comments at 500 characters", () => {
+    const result = validateCreateReview({
+      rating: 4,
+      comment: "a".repeat(501),
+    });
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.data.comment).toBe("a".repeat(500));
+    }
+  });
+
   it("rejects missing rating", () => {
     const result = validateCreateReview({ comment: "hi" });
     expect(result.ok).toBe(false);
