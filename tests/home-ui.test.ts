@@ -29,10 +29,13 @@ describe("home page UI", () => {
   it("announces slot winner without live-updating the spin window", () => {
     const spinner = projectFile("components/SlotSpinner.tsx");
 
-    expect(spinner).not.toMatch(/className=\{`slot-window[\s\S]*?\n\s*aria-live/);
     expect(spinner).toContain('className="sr-only" aria-live="polite"');
     expect(spinner).toContain("aria-hidden={spinning || undefined}");
     expect(spinner).toContain("restaurants.length === 0");
+    expect(spinner).toContain("case-strip");
+    expect(spinner).toContain("case-marker");
+    expect(spinner).toContain("case-reveal");
+    expect(spinner).toContain('from "next/image"');
   });
 
   it("uses optimized images for restaurant list items", () => {

@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Be_Vietnam_Pro, Bricolage_Grotesque } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Be_Vietnam_Pro, Manrope } from "next/font/google";
 import "./globals.css";
 
 const bodyFont = Be_Vietnam_Pro({
@@ -8,14 +8,27 @@ const bodyFont = Be_Vietnam_Pro({
   weight: ["400", "500", "600", "700"],
 });
 
-const displayFont = Bricolage_Grotesque({
+const displayFont = Manrope({
   variable: "--font-display",
   subsets: ["vietnamese", "latin"],
+  weight: ["600", "700", "800"],
 });
 
 export const metadata: Metadata = {
-  title: "Hôm nay ăn gì",
+  title: "Vnexter ăn gì",
   description: "Chọn nhanh quán ăn trưa quanh 219 Trung Kính, Hà Nội.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.webp", type: "image/webp" },
+    ],
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

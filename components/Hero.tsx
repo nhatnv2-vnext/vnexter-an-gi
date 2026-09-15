@@ -3,19 +3,19 @@ export function Hero() {
     <header className="hero">
       <div className="hero-kicker">
         <span aria-hidden="true" className="hero-kicker-line" />
-        Trưa nay, chốt nhanh
+        219 Trung Kính · Ăn trưa
       </div>
       <h1>
-        Hôm nay
+        Vnexter
         <span>ăn gì?</span>
       </h1>
       <p className="hero-copy">
-        Một cú quay cho bữa trưa quanh 219 Trung Kính — bớt phân vân,
+        Chọn nhanh quán ăn trưa quanh văn phòng — một cú quay, bớt phân vân,
         thêm thời gian để ăn ngon.
       </p>
       <a className="hero-jump" href="#quay-trua">
         Tìm món trưa
-        <span aria-hidden="true">↓</span>
+        <span aria-hidden="true">↗</span>
       </a>
     </header>
   );

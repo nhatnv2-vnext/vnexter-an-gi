@@ -37,7 +37,7 @@ export function RestaurantCard({
           src={restaurant.imageUrl}
           alt={`Món ăn trưa tại ${restaurant.name}`}
           fill
-          sizes="(max-width: 700px) 92vw, 320px"
+          sizes="(max-width: 760px) 46vw, (max-width: 1100px) 280px, 320px"
         />
       </Link>
       <div className="restaurant-copy">

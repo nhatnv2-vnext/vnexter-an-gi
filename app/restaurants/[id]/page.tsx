@@ -78,7 +78,7 @@ export default async function RestaurantPage({ params }: RestaurantPageProps) {
               alt={`Món ăn tại ${restaurant.name}`}
               fill
               priority
-              sizes="(max-width: 800px) 100vw, 48vw"
+              sizes="(max-width: 760px) 100vw, (max-width: 1100px) 90vw, 42vw"
             />
           </div>
         </div>

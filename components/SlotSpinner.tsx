@@ -1,7 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export type RestaurantSummary = {
   id: string;
@@ -9,8 +10,14 @@ export type RestaurantSummary = {
   imageUrl: string;
 };
 
-const wait = (duration: number) =>
-  new Promise((resolve) => window.setTimeout(resolve, duration));
+const ITEM_WIDTH = 148;
+const REEL_LOOPS = 28;
+const SPIN_MS = 4800;
+
+function prefersReducedMotion() {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
 
 export function SlotSpinner({
   restaurants,
@@ -19,8 +26,19 @@ export function SlotSpinner({
 }) {
   const [spinning, setSpinning] = useState(false);
   const [winner, setWinner] = useState<RestaurantSummary | null>(null);
-  const [displayName, setDisplayName] = useState("Sẵn sàng chọn món");
+  const [landedIndex, setLandedIndex] = useState<number | null>(null);
+  const [reveal, setReveal] = useState(false);
+  const [offset, setOffset] = useState(0);
+  const [animate, setAnimate] = useState(false);
+  const viewportRef = useRef<HTMLDivElement>(null);
   const mounted = useRef(true);
+
+  const reel = useMemo(() => {
+    if (restaurants.length === 0) return [] as RestaurantSummary[];
+    return Array.from({ length: REEL_LOOPS * restaurants.length }, (_, i) => {
+      return restaurants[i % restaurants.length];
+    });
+  }, [restaurants]);
 
   useEffect(() => {
     mounted.current = true;
@@ -29,23 +47,80 @@ export function SlotSpinner({
     };
   }, []);
 
-  async function spin() {
-    if (spinning || restaurants.length === 0) return;
+  useEffect(() => {
+    if (!reveal) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setReveal(false);
+    };
+    window.addEventListener("keydown", onKey);
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previous;
+    };
+  }, [reveal]);
 
-    setSpinning(true);
-    setWinner(null);
+  function finishSpin(pick: RestaurantSummary, winnerIndex: number) {
+    setWinner(pick);
+    setLandedIndex(winnerIndex);
+    setSpinning(false);
+    setAnimate(false);
+    setReveal(true);
+  }
+
+  function spin() {
+    if (spinning || restaurants.length === 0 || reel.length === 0) return;
+
     const pick = restaurants[Math.floor(Math.random() * restaurants.length)];
+    const viewportWidth = viewportRef.current?.clientWidth ?? 360;
 
-    for (let frame = 0; frame < 18; frame += 1) {
-      if (!mounted.current) return;
-      setDisplayName(restaurants[frame % restaurants.length].name);
-      await wait(60 + frame * 12);
+    const minIndex = Math.floor(reel.length * 0.72);
+    let winnerIndex = -1;
+    for (let i = minIndex; i < reel.length; i += 1) {
+      if (reel[i].id === pick.id) {
+        winnerIndex = i;
+        break;
+      }
+    }
+    if (winnerIndex < 0) {
+      for (let i = reel.length - 1; i >= 0; i -= 1) {
+        if (reel[i].id === pick.id) {
+          winnerIndex = i;
+          break;
+        }
+      }
     }
 
-    if (!mounted.current) return;
-    setDisplayName(pick.name);
-    setWinner(pick);
-    setSpinning(false);
+    const jitter = (Math.random() - 0.5) * (ITEM_WIDTH * 0.45);
+    const targetOffset =
+      winnerIndex * ITEM_WIDTH + ITEM_WIDTH / 2 - viewportWidth / 2 + jitter;
+
+    setWinner(null);
+    setLandedIndex(null);
+    setReveal(false);
+    setSpinning(true);
+    setAnimate(false);
+    setOffset(0);
+
+    const reduced = prefersReducedMotion();
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (!mounted.current) return;
+        if (reduced) {
+          setOffset(targetOffset);
+          finishSpin(pick, winnerIndex);
+          return;
+        }
+        setAnimate(true);
+        setOffset(targetOffset);
+        window.setTimeout(() => {
+          if (!mounted.current) return;
+          finishSpin(pick, winnerIndex);
+        }, SPIN_MS + 80);
+      });
+    });
   }
 
   return (
@@ -59,24 +134,59 @@ export function SlotSpinner({
         <div className="section-intro">
           <h2 id="spin-heading">Hôm nay ăn trưa gì?</h2>
           <p>
-            Vòng quay chọn ngẫu nhiên trong danh sách quán. Thời tiết có lời
-            khuyên riêng, không can thiệp kết quả.
+            Quay chọn quán trưa — thanh cuộn ngang, kim giữa chốt kết quả. Thời
+            tiết chỉ gợi ý riêng, không ảnh hưởng vòng quay.
           </p>
         </div>
 
         <div className="slot-machine">
-          <div
-            className={`slot-window${spinning ? " is-spinning" : ""}`}
-            aria-hidden={spinning || undefined}
-          >
+          <div className="case-opening">
             <span className="slot-eyebrow">
-              {spinning ? "Đang đảo món..." : winner ? "Chốt kèo trưa nay" : "Mời quay"}
+              {spinning
+                ? "Đang chọn quán trưa..."
+                : winner
+                  ? "Chốt kèo trưa nay"
+                  : "Mời quay"}
             </span>
-            <strong>{displayName}</strong>
+
+            <div
+              className={`case-viewport${spinning ? " is-spinning" : ""}`}
+              ref={viewportRef}
+              aria-hidden={spinning || undefined}
+            >
+              <div className="case-marker" aria-hidden="true" />
+              <div
+                className={`case-strip${animate ? " is-animating" : ""}`}
+                style={{ transform: `translate3d(${-offset}px, 0, 0)` }}
+              >
+                {reel.map((item, index) => (
+                  <div
+                    className={`case-item${
+                      landedIndex === index ? " is-winner" : ""
+                    }`}
+                    key={`${item.id}-${index}`}
+                    style={{ width: ITEM_WIDTH }}
+                  >
+                    <div className="case-thumb">
+                      <Image
+                        src={item.imageUrl}
+                        alt=""
+                        fill
+                        sizes="120px"
+                        className="case-thumb-image"
+                      />
+                    </div>
+                    <span className="case-item-name">{item.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
+
           <p className="sr-only" aria-live="polite" aria-atomic="true">
             {winner && !spinning ? `Chốt kèo trưa nay: ${winner.name}` : ""}
           </p>
+
           <div className="slot-actions">
             <button
               type="button"
@@ -89,7 +199,7 @@ export function SlotSpinner({
             {restaurants.length === 0 && (
               <p className="slot-empty">Chưa có quán để quay.</p>
             )}
-            {winner && (
+            {winner && !spinning && !reveal && (
               <Link className="result-link" href={`/restaurants/${winner.id}`}>
                 Xem quán vừa chọn
               </Link>
@@ -97,6 +207,54 @@ export function SlotSpinner({
           </div>
         </div>
       </div>
+
+      {reveal && winner && (
+        <div
+          className="case-reveal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="case-reveal-title"
+        >
+          <button
+            type="button"
+            className="case-reveal-backdrop"
+            aria-label="Đóng phần thưởng"
+            onClick={() => setReveal(false)}
+          />
+          <div className="case-reveal-flash" aria-hidden="true" />
+          <div className="case-reveal-card">
+            <div className="case-reveal-beams" aria-hidden="true" />
+            <div className="case-reveal-glow" aria-hidden="true" />
+            <div className="case-reveal-media">
+              <Image
+                src={winner.imageUrl}
+                alt=""
+                fill
+                sizes="280px"
+                className="case-reveal-image"
+                priority
+              />
+            </div>
+            <p className="case-reveal-eyebrow">Trưa nay nên ăn</p>
+            <h3 id="case-reveal-title">{winner.name}</h3>
+            <div className="case-reveal-actions">
+              <Link
+                className="case-reveal-primary"
+                href={`/restaurants/${winner.id}`}
+              >
+                Xem chi tiết quán
+              </Link>
+              <button
+                type="button"
+                className="case-reveal-secondary"
+                onClick={() => setReveal(false)}
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

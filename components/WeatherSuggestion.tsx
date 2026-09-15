@@ -2,9 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { WeatherIcon } from "@/components/WeatherIcon";
+import type { WeatherIconKind } from "@/lib/weather";
 
 type WeatherPayload = {
   condition: "rain" | "hot" | "cold" | "mild";
+  conditionLabel?: string;
+  skyLabel?: string;
+  icon?: WeatherIconKind;
   tempC: number | null;
   suggestionText: string;
   suggestedRestaurantId?: string;
@@ -17,6 +22,15 @@ const conditionLabels: Record<WeatherPayload["condition"], string> = {
   cold: "Se lạnh",
   mild: "Dễ chịu",
 };
+
+function iconFromCondition(
+  condition: WeatherPayload["condition"],
+): WeatherIconKind {
+  if (condition === "rain") return "rain";
+  if (condition === "hot") return "sun";
+  if (condition === "cold") return "cloudy";
+  return "partly-cloudy";
+}
 
 export function WeatherSuggestion() {
   const [weather, setWeather] = useState<WeatherPayload | null>(null);
@@ -42,19 +56,69 @@ export function WeatherSuggestion() {
     return () => controller.abort();
   }, []);
 
+  const skyLabel =
+    weather?.skyLabel ??
+    (weather ? conditionLabels[weather.condition] : null);
+  const conditionLabel =
+    weather?.conditionLabel ??
+    (weather ? conditionLabels[weather.condition] : null);
+  const tempDisplay =
+    weather?.tempC === null || weather?.tempC === undefined
+      ? null
+      : Math.round(weather.tempC);
+  const iconKind =
+    weather?.icon ??
+    (weather ? iconFromCondition(weather.condition) : "unknown");
+
   return (
     <section className="weather-section section-shell" aria-labelledby="weather-heading">
-      <div className="section-label">02 — Ngó trời</div>
+      <div className="section-label">02 — Thời tiết hôm nay</div>
       <div className="weather-layout">
-        <div className="weather-mark" aria-hidden="true">
-          <span />
+        <div
+          className={`weather-card is-${weather?.condition ?? "loading"} is-icon-${iconKind}`}
+          aria-live="polite"
+        >
+          <div className="weather-card-icon" aria-hidden="true">
+            {weather || failed ? (
+              <WeatherIcon kind={failed && !weather ? "unknown" : iconKind} />
+            ) : (
+              <span className="weather-card-loading" />
+            )}
+          </div>
+          <div className="weather-card-meta">
+            <p className="weather-card-place">Trung Kính · Hà Nội</p>
+            {tempDisplay !== null ? (
+              <p className="weather-card-temp">
+                <strong>{tempDisplay}</strong>
+                <span>°C</span>
+              </p>
+            ) : (
+              <p className="weather-card-temp is-muted">
+                {failed ? "--" : "..."}
+                <span>°C</span>
+              </p>
+            )}
+            <p className="weather-card-sky">
+              {weather
+                ? skyLabel
+                : failed
+                  ? "Chưa đọc được trời"
+                  : "Đang cập nhật..."}
+            </p>
+          </div>
         </div>
+
         <div className="weather-content">
           <p className="weather-status">
             {weather
-              ? `${conditionLabels[weather.condition]}${
-                  weather.tempC === null ? "" : ` · ${Math.round(weather.tempC)}°C`
-                }`
+              ? [
+                  skyLabel,
+                  conditionLabel && conditionLabel !== skyLabel
+                    ? conditionLabel
+                    : null,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")
               : failed
                 ? "Chưa đọc được thời tiết"
                 : "Đang xem thời tiết Trung Kính..."}
