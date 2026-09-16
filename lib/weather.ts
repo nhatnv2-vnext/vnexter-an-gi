@@ -79,16 +79,16 @@ const SUGGESTION_COPY: Record<
   { text: string; preferredTags: string[] }
 > = {
   rain: {
-    text: "Trưa mưa quanh Trung Kính — nên ăn bún bò Huế hoặc bún cá cay cho ấm bụng.",
-    preferredTags: ["bun", "nong"],
+    text: "Trưa mưa quanh Trung Kính — nên ăn món nóng như phở hoặc bún cho ấm bụng.",
+    preferredTags: ["pho", "nong", "bun"],
   },
   hot: {
-    text: "Trưa nắng nóng — vẫn có thể chọn bún cay vừa miệng gần 219 Trung Kính.",
-    preferredTags: ["bun", "trua"],
+    text: "Trưa nắng nóng — hợp món mát, nhẹ bụng hoặc đồ uống quanh 219 Trung Kính.",
+    preferredTags: ["mat", "cuon", "do-uong", "nhe"],
   },
   cold: {
-    text: "Trưa se lạnh — hợp món nóng như bún bò Huế hoặc bún cá cay.",
-    preferredTags: ["nong", "bun"],
+    text: "Trưa se lạnh — hợp món nóng như phở hoặc bún quanh Trung Kính.",
+    preferredTags: ["nong", "pho", "bun"],
   },
   mild: {
     text: "Thời tiết dễ chịu — hợp đi bộ ăn trưa quanh 219 Trung Kính.",
@@ -96,22 +96,58 @@ const SUGGESTION_COPY: Record<
   },
 };
 
+/**
+ * Score a restaurant based on how well its tags match the preferred tags.
+ * Higher scores mean better matches. Uses weighted scoring where tags
+ * earlier in preferredTags have higher weight.
+ */
+function scoreRestaurant(
+  restaurantTags: string[],
+  preferredTags: string[],
+): number {
+  let score = 0;
+  for (let i = 0; i < preferredTags.length; i++) {
+    const weight = preferredTags.length - i;
+    if (restaurantTags.includes(preferredTags[i])) {
+      score += weight;
+    }
+  }
+  return score;
+}
+
 export function buildLunchSuggestion(
   condition: WeatherCondition,
-  restaurants: { id: string; tags: string[] }[],
+  restaurants: { id: string; name: string; tags: string[] }[],
 ): {
   suggestionText: string;
   suggestedRestaurantId?: string;
   preferredTags: string[];
 } {
   const { text, preferredTags } = SUGGESTION_COPY[condition];
-  const match = restaurants.find((r) =>
-    r.tags.some((t) => preferredTags.includes(t)),
-  );
+
+  const scored = restaurants
+    .map((r) => ({
+      ...r,
+      score: scoreRestaurant(r.tags, preferredTags),
+    }))
+    .filter((r) => r.score > 0)
+    .sort((a, b) => b.score - a.score);
+
+  const bestMatch = scored[0];
+
+  if (bestMatch) {
+    const suggestionText = `${text} Gợi ý hôm nay: ${bestMatch.name}.`;
+    return {
+      suggestionText,
+      preferredTags,
+      suggestedRestaurantId: bestMatch.id,
+    };
+  }
+
   return {
     suggestionText: text,
     preferredTags,
-    suggestedRestaurantId: match?.id,
+    suggestedRestaurantId: undefined,
   };
 }
 

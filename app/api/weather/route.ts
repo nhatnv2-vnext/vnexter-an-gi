@@ -12,7 +12,7 @@ import {
 
 export async function GET() {
   const restaurants = await prisma.restaurant.findMany({
-    select: { id: true, tags: true },
+    select: { id: true, name: true, tags: true },
   });
 
   try {
@@ -30,6 +30,13 @@ export async function GET() {
       suggestedRestaurantId: suggestion.suggestedRestaurantId,
     });
   } catch {
+    const fallbackRestaurant = restaurants.find(
+      (r) => r.tags.includes("bun") || r.tags.includes("nong"),
+    );
+    const suggestionText = fallbackRestaurant
+      ? `${DEFAULT_LUNCH_FALLBACK} Gợi ý hôm nay: ${fallbackRestaurant.name}.`
+      : DEFAULT_LUNCH_FALLBACK;
+
     return NextResponse.json({
       condition: "mild",
       conditionLabel: CONDITION_LABELS.mild,
@@ -37,10 +44,8 @@ export async function GET() {
       icon: "unknown",
       tempC: null,
       weatherCode: null,
-      suggestionText: DEFAULT_LUNCH_FALLBACK,
-      suggestedRestaurantId: restaurants.find((r) =>
-        r.tags.includes("bun") || r.tags.includes("nong"),
-      )?.id,
+      suggestionText,
+      suggestedRestaurantId: fallbackRestaurant?.id,
       degraded: true,
     });
   }

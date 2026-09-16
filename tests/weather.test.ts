@@ -48,28 +48,86 @@ describe("weatherIconFromCode", () => {
 });
 
 describe("buildLunchSuggestion", () => {
-  const restaurants = [
-    { id: "r1", tags: ["bun", "nong", "trua"] },
-    { id: "r2", tags: ["bun", "cay", "trua"] },
-  ];
-
-  it("suggests bun lunch on rain and picks bun/nong restaurant", () => {
+  it("suggests hot dishes on rain and ranks restaurants by tag match", () => {
+    const restaurants = [
+      { id: "r1", name: "Quán A", tags: ["bun", "cay", "trua"] },
+      { id: "r2", name: "Quán Phở", tags: ["pho", "nong", "trua"] },
+      { id: "r3", name: "Quán Bún Nóng", tags: ["bun", "nong", "trua"] },
+    ];
     const result = buildLunchSuggestion("rain", restaurants);
     expect(result.suggestionText).toMatch(/trưa/i);
-    expect(result.suggestionText).toMatch(/bún bò|bún cá|món nóng/i);
-    expect(result.suggestedRestaurantId).toBe("r1");
-    expect(result.preferredTags).toContain("bun");
+    expect(result.suggestionText).toMatch(/mưa/i);
+    expect(result.suggestionText).toMatch(/món nóng|phở|bún/i);
+    expect(result.suggestedRestaurantId).toBe("r2");
+    expect(result.suggestionText).toContain("Quán Phở");
+    expect(result.preferredTags).toEqual(["pho", "nong", "bun"]);
   });
 
-  it("suggests bun lunch on hot and picks bun-tagged restaurant", () => {
+  it("suggests cool/light dishes on hot weather and ranks correctly", () => {
+    const restaurants = [
+      { id: "r1", name: "Bún Nóng", tags: ["bun", "nong", "trua"] },
+      { id: "r2", name: "Gỏi Cuốn Mát", tags: ["cuon", "mat", "trua"] },
+      { id: "r3", name: "Sinh Tố", tags: ["do-uong", "mat", "trua"] },
+    ];
     const result = buildLunchSuggestion("hot", restaurants);
-    expect(result.suggestionText).toMatch(/trưa/i);
+    expect(result.suggestionText).toMatch(/nắng nóng/i);
+    expect(result.suggestionText).toMatch(/mát|nhẹ bụng|đồ uống/i);
+    expect(result.suggestedRestaurantId).toBe("r2");
+    expect(result.suggestionText).toContain("Gỏi Cuốn Mát");
+    expect(result.preferredTags).toEqual(["mat", "cuon", "do-uong", "nhe"]);
+  });
+
+  it("suggests hot dishes on cold weather and prefers nong tag", () => {
+    const restaurants = [
+      { id: "r1", name: "Bún Cay", tags: ["bun", "cay", "trua"] },
+      { id: "r2", name: "Phở Nóng", tags: ["pho", "nong", "trua"] },
+    ];
+    const result = buildLunchSuggestion("cold", restaurants);
+    expect(result.suggestionText).toMatch(/se lạnh/i);
+    expect(result.suggestionText).toMatch(/món nóng|phở|bún/i);
+    expect(result.suggestedRestaurantId).toBe("r2");
+    expect(result.suggestionText).toContain("Phở Nóng");
+  });
+
+  it("suggests lunch-appropriate restaurants on mild weather", () => {
+    const restaurants = [
+      { id: "r1", name: "Quán Trưa", tags: ["trua", "com"] },
+      { id: "r2", name: "Quán Khác", tags: ["toi", "com"] },
+    ];
+    const result = buildLunchSuggestion("mild", restaurants);
+    expect(result.suggestionText).toMatch(/dễ chịu/i);
     expect(result.suggestedRestaurantId).toBe("r1");
+    expect(result.suggestionText).toContain("Quán Trưa");
   });
 
   it("returns text without restaurant id when no tag match", () => {
-    const result = buildLunchSuggestion("rain", [{ id: "x", tags: ["khac"] }]);
+    const result = buildLunchSuggestion("rain", [
+      { id: "x", name: "Quán X", tags: ["khac", "toi"] },
+    ]);
     expect(result.suggestionText.length).toBeGreaterThan(0);
+    expect(result.suggestionText).toMatch(/mưa/i);
+    expect(result.suggestionText).not.toContain("Quán X");
     expect(result.suggestedRestaurantId).toBeUndefined();
+  });
+
+  it("scores restaurants by weighted tag priority", () => {
+    const restaurants = [
+      { id: "r1", name: "Bún Only", tags: ["bun", "trua"] },
+      { id: "r2", name: "Phở Perfect", tags: ["pho", "nong", "trua"] },
+      { id: "r3", name: "Nóng Only", tags: ["nong", "trua"] },
+    ];
+    const result = buildLunchSuggestion("rain", restaurants);
+    expect(result.suggestedRestaurantId).toBe("r2");
+  });
+
+  it("picks higher-scored restaurant when multiple match", () => {
+    const restaurants = [
+      { id: "r1", name: "Mat Only", tags: ["mat", "trua"] },
+      { id: "r2", name: "Mat + Cuon", tags: ["mat", "cuon", "trua"] },
+      { id: "r3", name: "Cuon Only", tags: ["cuon", "trua"] },
+    ];
+    const result = buildLunchSuggestion("hot", restaurants);
+    expect(result.suggestedRestaurantId).toBe("r2");
+    expect(result.suggestionText).toContain("Mat + Cuon");
   });
 });
