@@ -163,21 +163,22 @@ export function SlotSpinner({
           </p>
         </div>
 
-        <div className="cuisine-filters">
-          {CUISINE_FILTERS.map((filter) => (
-            <button
-              key={filter.id}
-              type="button"
-              className={`filter-chip${selectedFilter === filter.id ? " is-active" : ""}`}
-              onClick={() => setSelectedFilter(filter.id)}
-              disabled={spinning}
-            >
-              {filter.label}
-            </button>
-          ))}
-        </div>
+        <div className="spinner-controls">
+          <div className="cuisine-filters">
+            {CUISINE_FILTERS.map((filter) => (
+              <button
+                key={filter.id}
+                type="button"
+                className={`filter-chip${selectedFilter === filter.id ? " is-active" : ""}`}
+                onClick={() => setSelectedFilter(filter.id)}
+                disabled={spinning}
+              >
+                {filter.label}
+              </button>
+            ))}
+          </div>
 
-        <div className="slot-machine">
+          <div className="slot-machine">
           <div className="case-opening">
             <span className="slot-eyebrow">
               {spinning
@@ -248,6 +249,7 @@ export function SlotSpinner({
               </Link>
             )}
           </div>
+        </div>
         </div>
       </div>
 

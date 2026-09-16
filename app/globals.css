@@ -244,14 +244,20 @@ button {
 
 .spinner-layout {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-  gap: clamp(3rem, 8vw, 8rem);
-  align-items: center;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  align-items: start;
   min-width: 0;
 }
 
 .spinner-layout > * {
   min-width: 0;
+}
+
+.spinner-controls {
+  display: grid;
+  gap: 1.5rem;
+  width: 100%;
 }
 
 .section-intro h2,
@@ -278,7 +284,6 @@ button {
   display: flex;
   flex-wrap: wrap;
   gap: 0.625rem;
-  margin-bottom: 1.5rem;
 }
 
 .filter-chip {
