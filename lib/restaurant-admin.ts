@@ -9,6 +9,9 @@ export type RestaurantInput = {
   closeTime?: string | null;
   priceMin?: number | null;
   priceMax?: number | null;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  metaImageUrl?: string | null;
 };
 
 export function slugifyName(name: string): string {
@@ -23,17 +26,34 @@ export function slugifyName(name: string): string {
 }
 
 export function parseTags(raw: unknown): string[] {
+  const collected: string[] = [];
   if (Array.isArray(raw)) {
-    return raw
-      .filter((t): t is string => typeof t === "string")
-      .map((t) => t.trim())
-      .filter(Boolean);
+    for (const item of raw) {
+      if (typeof item !== "string") continue;
+      const tag = item.trim();
+      if (tag) collected.push(tag);
+    }
+  } else if (typeof raw === "string") {
+    for (const part of raw.split(",")) {
+      const tag = part.trim();
+      if (tag) collected.push(tag);
+    }
   }
-  if (typeof raw !== "string") return [];
-  return raw
-    .split(",")
-    .map((t) => t.trim())
-    .filter(Boolean);
+  return Array.from(new Set(collected));
+}
+
+function optionalTrimmedString(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed || null;
+}
+
+function isHttpOrPathUrl(url: string): boolean {
+  return (
+    url.startsWith("/") ||
+    url.startsWith("https://") ||
+    url.startsWith("http://")
+  );
 }
 
 export function validateRestaurantInput(
@@ -61,11 +81,7 @@ export function validateRestaurantInput(
       error: "Không dùng ảnh dạng data URL — hãy dán link https hoặc đường dẫn /restaurants/...",
     };
   }
-  if (
-    !imageUrl.startsWith("/") &&
-    !imageUrl.startsWith("https://") &&
-    !imageUrl.startsWith("http://")
-  ) {
+  if (!isHttpOrPathUrl(imageUrl)) {
     return {
       ok: false,
       error: "URL ảnh phải là đường dẫn /... hoặc link http(s)://...",
@@ -75,9 +91,33 @@ export function validateRestaurantInput(
   const slug = slugRaw || slugifyName(name);
   if (!slug) return { ok: false, error: "Slug không hợp lệ" };
 
-  const openTime = typeof body.openTime === "string" ? body.openTime.trim() || null : null;
-  const closeTime = typeof body.closeTime === "string" ? body.closeTime.trim() || null : null;
-  
+  const openTime = optionalTrimmedString(body.openTime);
+  const closeTime = optionalTrimmedString(body.closeTime);
+  const metaTitle = optionalTrimmedString(body.metaTitle);
+  const metaDescription = optionalTrimmedString(body.metaDescription);
+  const metaImageUrl = optionalTrimmedString(body.metaImageUrl);
+
+  if (metaTitle && metaTitle.length > 70) {
+    return { ok: false, error: "Meta title tối đa 70 ký tự" };
+  }
+  if (metaDescription && metaDescription.length > 180) {
+    return { ok: false, error: "Meta description tối đa 180 ký tự" };
+  }
+  if (metaImageUrl) {
+    if (metaImageUrl.startsWith("data:")) {
+      return {
+        ok: false,
+        error: "Meta image không dùng data URL — hãy dán link https hoặc /...",
+      };
+    }
+    if (!isHttpOrPathUrl(metaImageUrl)) {
+      return {
+        ok: false,
+        error: "Meta image phải là đường dẫn /... hoặc link http(s)://...",
+      };
+    }
+  }
+
   const priceMin = typeof body.priceMin === "number" ? body.priceMin : null;
   const priceMax = typeof body.priceMax === "number" ? body.priceMax : null;
 
@@ -94,6 +134,9 @@ export function validateRestaurantInput(
       closeTime,
       priceMin,
       priceMax,
+      metaTitle,
+      metaDescription,
+      metaImageUrl,
     },
   };
 }

@@ -179,3 +179,54 @@ export async function fetchOpenMeteoCurrent(): Promise<{
   }
   return { tempC, weatherCode };
 }
+
+export type LunchWeatherPayload = {
+  condition: WeatherCondition;
+  conditionLabel: string;
+  skyLabel: string;
+  icon: WeatherIconKind;
+  tempC: number | null;
+  weatherCode: number | null;
+  suggestionText: string;
+  suggestedRestaurantId?: string;
+  degraded?: boolean;
+};
+
+export async function getLunchWeather(
+  restaurants: { id: string; name: string; tags: string[] }[],
+): Promise<LunchWeatherPayload> {
+  try {
+    const { tempC, weatherCode } = await fetchOpenMeteoCurrent();
+    const condition = classifyWeather(tempC, weatherCode);
+    const suggestion = buildLunchSuggestion(condition, restaurants);
+    return {
+      condition,
+      conditionLabel: CONDITION_LABELS[condition],
+      skyLabel: describeWeatherCode(weatherCode),
+      icon: weatherIconFromCode(weatherCode),
+      tempC,
+      weatherCode,
+      suggestionText: suggestion.suggestionText,
+      suggestedRestaurantId: suggestion.suggestedRestaurantId,
+    };
+  } catch {
+    const fallbackRestaurant = restaurants.find(
+      (r) => r.tags.includes("bun") || r.tags.includes("nong"),
+    );
+    const suggestionText = fallbackRestaurant
+      ? `${DEFAULT_LUNCH_FALLBACK} Gợi ý hôm nay: ${fallbackRestaurant.name}.`
+      : DEFAULT_LUNCH_FALLBACK;
+
+    return {
+      condition: "mild",
+      conditionLabel: CONDITION_LABELS.mild,
+      skyLabel: "Chưa lấy được trời",
+      icon: "unknown",
+      tempC: null,
+      weatherCode: null,
+      suggestionText,
+      suggestedRestaurantId: fallbackRestaurant?.id,
+      degraded: true,
+    };
+  }
+}

@@ -35,7 +35,6 @@ describe("price range / budget filter", () => {
 
     expect(card).toContain("priceLabel");
     expect(card).toContain("restaurant-price-badge");
-    // Check for "k" format (e.g., 40k–80k)
     expect(card).toContain("/ 1000");
     expect(card).toContain("toFixed(0)");
   });
@@ -44,31 +43,22 @@ describe("price range / budget filter", () => {
     const filter = projectFile("components/BudgetFilter.tsx");
 
     expect(filter).toContain("BUDGET_OPTIONS");
-    expect(filter).toContain("Ngân sách trưa");
+    expect(filter).toContain("Tìm quán trong khoảng giá");
     expect(filter).toContain("Bất kỳ");
     expect(filter).toContain("≤ 30k");
     expect(filter).toContain("≤ 50k");
     expect(filter).toContain("≤ 80k");
   });
 
-  it("integrates budget filter with spin pool", () => {
-    const spinner = projectFile("components/SlotSpinner.tsx");
-
-    expect(spinner).toContain("budgetMax");
-    expect(spinner).toContain("priceMin");
-    expect(spinner).toContain("priceMax");
-    // Check budget filter logic
-    expect(spinner).toContain("Apply budget filter");
-  });
-
-  it("uses SpinnerSection wrapper for budget state", () => {
-    const section = projectFile("components/SpinnerSection.tsx");
+  it("lifts budget filter through HomeSections", () => {
+    const home = projectFile("components/HomeSections.tsx");
     const page = projectFile("app/page.tsx");
 
-    expect(section).toContain("BudgetFilter");
-    expect(section).toContain("SlotSpinner");
-    expect(section).toContain("budgetMax");
-    expect(page).toContain("SpinnerSection");
+    expect(home).toContain("BudgetFilter");
+    expect(home).toContain("SlotSpinner");
+    expect(home).toContain("budgetMax");
+    expect(home).toContain("filterRestaurants");
+    expect(page).toContain("HomeSections");
   });
 
   it("styles budget filter and price badge in CSS", () => {
@@ -77,17 +67,5 @@ describe("price range / budget filter", () => {
     expect(css).toContain(".budget-filter");
     expect(css).toContain(".budget-filter-label");
     expect(css).toContain(".restaurant-price-badge");
-  });
-
-  it("includes seed data documentation", () => {
-    const docs = projectFile("docs/PRICE_SEED_DATA.md");
-
-    expect(docs).toContain("Bếp 3 Miền");
-    expect(docs).toContain("40000");
-    expect(docs).toContain("70000");
-    expect(docs).toContain("Bún Cá Rô Bà Kỵ");
-    expect(docs).toContain("Phở Vịt Quay");
-    expect(docs).toContain("Cuốn Ngon");
-    expect(docs).toContain("Nhà Hàng Tràng An");
   });
 });

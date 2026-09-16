@@ -1,10 +1,43 @@
+import type { Metadata } from "next";
 import { Hero } from "@/components/Hero";
-import { RestaurantList } from "@/components/RestaurantList";
-import { SpinnerSection } from "@/components/SpinnerSection";
-import { WeatherSuggestion } from "@/components/WeatherSuggestion";
+import { HomeSections } from "@/components/HomeSections";
+import { SiteFooter } from "@/components/SiteFooter";
 import { prisma } from "@/lib/prisma";
+import { getLunchWeather } from "@/lib/weather";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: {
+    absolute: "Vnexter ăn gì — Quán trưa quanh 219 Trung Kính",
+  },
+  description:
+    "Chọn nhanh quán ăn trưa quanh 219 Trung Kính, Cầu Giấy, Hà Nội. Quay random, lọc theo giá & loại món, gợi ý theo thời tiết.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Vnexter ăn gì — Quán trưa quanh 219 Trung Kính",
+    description:
+      "Chọn nhanh quán ăn trưa quanh 219 Trung Kính. Quay random, lọc giá & món, gợi ý theo thời tiết.",
+    url: "/",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "Vnexter ăn gì — chọn quán trưa quanh 219 Trung Kính",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Vnexter ăn gì — Quán trưa quanh 219 Trung Kính",
+    description:
+      "Chọn nhanh quán ăn trưa quanh 219 Trung Kính. Quay random, lọc giá & món, gợi ý theo thời tiết.",
+    images: ["/og.png"],
+  },
+};
 
 export default async function Home() {
   const rows = await prisma.restaurant.findMany({
@@ -27,23 +60,17 @@ export default async function Home() {
     };
   });
 
+  const weather = await getLunchWeather(
+    restaurants.map(({ id, name, tags }) => ({ id, name, tags })),
+  );
+
   return (
     <main>
       <Hero />
       <div className="home-sections">
-        <SpinnerSection
-          restaurants={restaurants.map(({ id, name, imageUrl, tags, priceMin, priceMax }) => ({
-            id,
-            name,
-            imageUrl,
-            tags,
-            priceMin,
-            priceMax,
-          }))}
-        />
-        <WeatherSuggestion />
-        <RestaurantList restaurants={restaurants} />
+        <HomeSections restaurants={restaurants} weather={weather} />
       </div>
+      <SiteFooter />
     </main>
   );
 }

@@ -1,5 +1,6 @@
 import { hash } from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
+import { buildRestaurantSeo } from "../lib/restaurant-seo";
 
 const prisma = new PrismaClient();
 
@@ -110,13 +111,14 @@ async function seedRestaurants() {
   });
 
   await Promise.all(
-    restaurants.map((restaurant) =>
-      prisma.restaurant.upsert({
+    restaurants.map((restaurant) => {
+      const withSeo = { ...restaurant, ...buildRestaurantSeo(restaurant) };
+      return prisma.restaurant.upsert({
         where: { slug: restaurant.slug },
-        update: restaurant,
-        create: restaurant,
-      }),
-    ),
+        update: withSeo,
+        create: withSeo,
+      });
+    }),
   );
 }
 

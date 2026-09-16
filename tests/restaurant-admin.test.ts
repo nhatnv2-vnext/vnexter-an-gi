@@ -37,6 +37,35 @@ describe("validateRestaurantInput", () => {
     }
   });
 
+  it("accepts optional SEO meta fields", () => {
+    const result = validateRestaurantInput({
+      name: "Tứ Hải",
+      description: "Mô tả",
+      address: "Trung Kính",
+      imageUrl: "/restaurants/x.jpg",
+      metaTitle: "Tứ Hải gần Trung Kính",
+      metaDescription: "Cơm rang và phở bò quanh 219 Trung Kính",
+      metaImageUrl: "https://example.com/og.jpg",
+    });
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.data.metaTitle).toBe("Tứ Hải gần Trung Kính");
+      expect(result.data.metaDescription).toContain("Cơm rang");
+      expect(result.data.metaImageUrl).toBe("https://example.com/og.jpg");
+    }
+  });
+
+  it("rejects oversized meta title", () => {
+    const bad = validateRestaurantInput({
+      name: "Test",
+      description: "Mô tả",
+      address: "Trung Kính",
+      imageUrl: "/restaurants/x.jpg",
+      metaTitle: "x".repeat(71),
+    });
+    expect(bad.ok).toBe(false);
+  });
+
   it("accepts https image URLs and rejects data URLs", () => {
     const ok = validateRestaurantInput({
       name: "Test",

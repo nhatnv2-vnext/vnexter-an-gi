@@ -5,44 +5,48 @@ const projectFile = (path: string) =>
   readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 
 describe("spin filter by cuisine", () => {
-  it("includes cuisine filter chips in SlotSpinner", () => {
-    const spinner = projectFile("components/SlotSpinner.tsx");
+  it("includes cuisine filter chips via shared filters", () => {
+    const filters = projectFile("lib/restaurant-filters.ts");
+    const home = projectFile("components/HomeSections.tsx");
 
-    expect(spinner).toContain("CUISINE_FILTERS");
-    expect(spinner).toContain("filter-chip");
-    expect(spinner).toContain("selectedFilter");
-    expect(spinner).toContain('label: "Tất cả"');
-    expect(spinner).toContain('label: "Món nước"');
-    expect(spinner).toContain('label: "Cơm"');
-    expect(spinner).toContain('label: "Cuốn"');
+    expect(filters).toContain("CUISINE_FILTERS");
+    expect(filters).toContain('label: "Tất cả"');
+    expect(filters).toContain('label: "Món nước"');
+    expect(filters).toContain('label: "Cơm"');
+    expect(filters).toContain('label: "Cuốn"');
+    expect(home).toContain("CUISINE_FILTERS");
+    expect(home).toContain("filter-chip");
   });
 
   it("filters restaurants based on selected cuisine", () => {
-    const spinner = projectFile("components/SlotSpinner.tsx");
+    const filters = projectFile("lib/restaurant-filters.ts");
 
-    expect(spinner).toContain("filteredRestaurants");
-    expect(spinner).toContain("filter.tags.some");
-    expect(spinner).toContain("r.tags.includes");
+    expect(filters).toContain("filterRestaurants");
+    expect(filters).toContain("matchesCuisine");
+    expect(filters).toContain("filter.tags.some");
   });
 
   it("shows empty state when no restaurants match filter", () => {
     const spinner = projectFile("components/SlotSpinner.tsx");
 
-    expect(spinner).toContain("filteredRestaurants.length === 0");
-    expect(spinner).toContain("restaurants.length > 0");
+    expect(spinner).toContain("totalAvailable");
     expect(spinner).toContain("Không có quán nào phù hợp");
   });
 
   it("disables spin button when no restaurants match filter", () => {
     const spinner = projectFile("components/SlotSpinner.tsx");
 
-    expect(spinner).toContain("disabled={spinning || filteredRestaurants.length === 0}");
+    expect(spinner).toContain(
+      "disabled={spinning || restaurants.length === 0}",
+    );
   });
 
-  it("passes tags to SlotSpinner from home page", () => {
+  it("passes tags through HomeSections", () => {
+    const home = projectFile("components/HomeSections.tsx");
     const page = projectFile("app/page.tsx");
 
-    expect(page).toMatch(/tags[,}]/);
+    expect(home).toMatch(/tags/);
+    expect(page).toContain("HomeSections");
   });
 });
 
@@ -76,7 +80,8 @@ describe("open hours badge", () => {
 
     expect(card).toContain("hoursLabel");
     expect(card).toContain("restaurant-hours-badge");
-    expect(card).toContain("Mở đến");
+    expect(card).toContain("formatHoursLabel");
+    expect(card).toContain("Đang mở");
   });
 
   it("styles hours badge in CSS", () => {

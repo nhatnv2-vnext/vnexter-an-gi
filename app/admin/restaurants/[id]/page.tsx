@@ -36,6 +36,9 @@ export default async function EditRestaurantPage({ params }: Props) {
           closeTime: restaurant.closeTime,
           priceMin: restaurant.priceMin,
           priceMax: restaurant.priceMax,
+          metaTitle: restaurant.metaTitle,
+          metaDescription: restaurant.metaDescription,
+          metaImageUrl: restaurant.metaImageUrl,
         }}
       />
     </div>

@@ -5,17 +5,25 @@ const projectFile = (path: string) =>
   readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 
 describe("home page UI", () => {
-  it("renders the four lunch-focused sections in the required order", () => {
+  it("renders hero, home sections, and footer", () => {
     const page = projectFile("app/page.tsx");
     const hero = page.indexOf("<Hero");
-    const spinner = page.indexOf("<SpinnerSection");
-    const weather = page.indexOf("<WeatherSuggestion");
-    const list = page.indexOf("<RestaurantList");
+    const sections = page.indexOf("<HomeSections");
+    const footer = page.indexOf("<SiteFooter");
 
     expect(hero).toBeGreaterThan(-1);
-    expect(spinner).toBeGreaterThan(hero);
-    expect(weather).toBeGreaterThan(spinner);
-    expect(list).toBeGreaterThan(weather);
+    expect(sections).toBeGreaterThan(hero);
+    expect(footer).toBeGreaterThan(sections);
+  });
+
+  it("embeds Google Maps for 219 Trung Kinh in the homepage footer", () => {
+    const footer = projectFile("components/SiteFooter.tsx");
+
+    expect(footer).toContain("google.com/maps");
+    expect(footer).toContain("219");
+    expect(footer).toContain("Trung K");
+    expect(footer).toContain("IntersectionObserver");
+    expect(footer).toContain("mapLoaded");
   });
 
   it("keeps weather fetching out of the slot spinner", () => {
@@ -23,7 +31,8 @@ describe("home page UI", () => {
     const weather = projectFile("components/WeatherSuggestion.tsx");
 
     expect(spinner).not.toContain("/api/weather");
-    expect(weather).toContain('fetch("/api/weather"');
+    expect(weather).not.toContain('fetch("/api/weather"');
+    expect(weather).toContain("LunchWeatherPayload");
   });
 
   it("announces slot winner without live-updating the spin window", () => {

@@ -19,6 +19,9 @@ type Props = {
     closeTime?: string | null;
     priceMin?: number | null;
     priceMax?: number | null;
+    metaTitle?: string | null;
+    metaDescription?: string | null;
+    metaImageUrl?: string | null;
   };
 };
 
@@ -34,13 +37,26 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
   const [closeTime, setCloseTime] = useState(initial?.closeTime ?? "");
   const [priceMin, setPriceMin] = useState(initial?.priceMin?.toString() ?? "");
   const [priceMax, setPriceMax] = useState(initial?.priceMax?.toString() ?? "");
+  const [metaTitle, setMetaTitle] = useState(initial?.metaTitle ?? "");
+  const [metaDescription, setMetaDescription] = useState(
+    initial?.metaDescription ?? "",
+  );
+  const [metaImageUrl, setMetaImageUrl] = useState(initial?.metaImageUrl ?? "");
   const [selectedTags, setSelectedTags] = useState<Set<string>>(
-    new Set(initial?.tags ?? [])
+    new Set(
+      (initial?.tags ?? []).filter((tag) =>
+        RESTAURANT_TAGS.some((t) => t.id === tag),
+      ),
+    ),
   );
   const [customTags, setCustomTags] = useState<string[]>(
-    (initial?.tags ?? []).filter(
-      (tag) => !RESTAURANT_TAGS.some((t) => t.id === tag)
-    )
+    Array.from(
+      new Set(
+        (initial?.tags ?? []).filter(
+          (tag) => !RESTAURANT_TAGS.some((t) => t.id === tag),
+        ),
+      ),
+    ),
   );
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -81,7 +97,7 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
     event.preventDefault();
     setSaving(true);
     setError("");
-    const allTags = [...Array.from(selectedTags), ...customTags];
+    const allTags = Array.from(new Set([...selectedTags, ...customTags]));
     const payload = {
       name,
       slug,
@@ -93,6 +109,9 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
       closeTime: closeTime || null,
       priceMin: priceMin ? parseInt(priceMin, 10) : null,
       priceMax: priceMax ? parseInt(priceMax, 10) : null,
+      metaTitle: metaTitle.trim() || null,
+      metaDescription: metaDescription.trim() || null,
+      metaImageUrl: metaImageUrl.trim() || null,
     };
     const res = await fetch(
       mode === "create"
@@ -256,6 +275,48 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
           </div>
         )}
         {uploading && <p className="admin-muted">Đang upload...</p>}
+      </fieldset>
+      <fieldset className="admin-seo-fields">
+        <legend>SEO / Meta</legend>
+        <p className="admin-muted">
+          Tùy chọn — nếu để trống sẽ dùng tên quán, mô tả và ảnh quán.
+        </p>
+        <label>
+          Meta title
+          <input
+            value={metaTitle}
+            onChange={(e) => setMetaTitle(e.target.value)}
+            placeholder={name ? `${name} · Vnexter ăn gì` : "Tiêu đề trên Google"}
+            maxLength={70}
+          />
+          <span className="admin-field-hint">
+            {metaTitle.trim().length}/70 ký tự — khuyến nghị ~50–60.
+          </span>
+        </label>
+        <label>
+          Meta description
+          <textarea
+            rows={3}
+            value={metaDescription}
+            onChange={(e) => setMetaDescription(e.target.value)}
+            placeholder="Mô tả ngắn hiện trên kết quả tìm kiếm"
+            maxLength={180}
+          />
+          <span className="admin-field-hint">
+            {metaDescription.trim().length}/180 ký tự — khuyến nghị ~140–160.
+          </span>
+        </label>
+        <label>
+          Meta image URL (Open Graph)
+          <input
+            value={metaImageUrl}
+            onChange={(e) => setMetaImageUrl(e.target.value)}
+            placeholder="Để trống = dùng ảnh quán"
+          />
+          <span className="admin-field-hint">
+            Ảnh khi share Facebook / Zalo / iMessage. Nên ~1200×630.
+          </span>
+        </label>
       </fieldset>
       {error && <p className="admin-error">{error}</p>}
       <div className="admin-form-actions">

@@ -1,16 +1,67 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import { AddressMapLink } from "@/components/AddressMapLink";
 import { ReviewForm } from "@/components/ReviewForm";
 import { ReviewList } from "@/components/ReviewList";
 import { StarRating } from "@/components/StarRating";
 import { prisma } from "@/lib/prisma";
+import { formatHoursLabel, isOpenNow } from "@/lib/restaurant-hours";
+import { getTagLabel } from "@/lib/restaurant-tags";
 import { VISITOR_COOKIE } from "@/lib/visitor";
 
 type RestaurantPageProps = {
   params: Promise<{ id: string }>;
 };
+
+export async function generateMetadata({
+  params,
+}: RestaurantPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const restaurant = await prisma.restaurant.findUnique({
+    where: { id },
+    select: {
+      name: true,
+      description: true,
+      imageUrl: true,
+      metaTitle: true,
+      metaDescription: true,
+      metaImageUrl: true,
+    },
+  });
+  if (!restaurant) return { title: "Không tìm thấy quán" };
+
+  const title = restaurant.metaTitle?.trim();
+  const description = (
+    restaurant.metaDescription?.trim() || restaurant.description
+  ).slice(0, 180);
+  const image = restaurant.metaImageUrl?.trim() || restaurant.imageUrl;
+
+  return {
+    title: title ? { absolute: title } : restaurant.name,
+    description,
+    alternates: {
+      canonical: `/restaurants/${id}`,
+    },
+    openGraph: {
+      type: "website",
+      locale: "vi_VN",
+      url: `/restaurants/${id}`,
+      siteName: "Vnexter ăn gì",
+      title: title || `${restaurant.name} · Vnexter ăn gì`,
+      description,
+      images: image ? [{ url: image }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: title || `${restaurant.name} · Vnexter ăn gì`,
+      description,
+      images: image ? [image] : undefined,
+    },
+  };
+}
 
 export default async function RestaurantPage({ params }: RestaurantPageProps) {
   const { id } = await params;
@@ -35,13 +86,17 @@ export default async function RestaurantPage({ params }: RestaurantPageProps) {
     ? restaurant.reviews.find((review) => review.visitorId === visitorId) ?? null
     : null;
 
-  const priceLabel = restaurant.priceMin && restaurant.priceMax
-    ? `${(restaurant.priceMin / 1000).toFixed(0)}–${(restaurant.priceMax / 1000).toFixed(0)}k`
-    : restaurant.priceMin
-    ? `Từ ${(restaurant.priceMin / 1000).toFixed(0)}k`
-    : restaurant.priceMax
-    ? `Đến ${(restaurant.priceMax / 1000).toFixed(0)}k`
-    : null;
+  const priceLabel =
+    restaurant.priceMin && restaurant.priceMax
+      ? `${(restaurant.priceMin / 1000).toFixed(0)}–${(restaurant.priceMax / 1000).toFixed(0)}k`
+      : restaurant.priceMin
+        ? `Từ ${(restaurant.priceMin / 1000).toFixed(0)}k`
+        : restaurant.priceMax
+          ? `Đến ${(restaurant.priceMax / 1000).toFixed(0)}k`
+          : null;
+
+  const hoursLabel = formatHoursLabel(restaurant.openTime, restaurant.closeTime);
+  const openStatus = isOpenNow(restaurant.openTime, restaurant.closeTime);
 
   return (
     <main className="detail-page">
@@ -56,9 +111,20 @@ export default async function RestaurantPage({ params }: RestaurantPageProps) {
             <p className="section-label">Quán trưa quanh Trung Kính</p>
             <h1>{restaurant.name}</h1>
             <p className="detail-description">{restaurant.description}</p>
-            <p className="detail-address">
-              <span aria-hidden="true">⌖</span> {restaurant.address}
-            </p>
+            <AddressMapLink
+              className="detail-address"
+              address={restaurant.address}
+            />
+            {hoursLabel && (
+              <p className="detail-hours">
+                <span aria-hidden="true">🕒</span> {hoursLabel}
+                {openStatus === true
+                  ? " · Đang mở"
+                  : openStatus === false
+                    ? " · Đã đóng"
+                    : ""}
+              </p>
+            )}
             {priceLabel && (
               <p className="detail-price">
                 <span aria-hidden="true">💰</span> {priceLabel}
@@ -80,8 +146,8 @@ export default async function RestaurantPage({ params }: RestaurantPageProps) {
               </span>
             </div>
             <div className="detail-tags" aria-label="Đặc điểm quán">
-              {restaurant.tags.map((tag) => (
-                <span key={tag}>{tag}</span>
+              {Array.from(new Set(restaurant.tags)).map((tag) => (
+                <span key={tag}>{getTagLabel(tag)}</span>
               ))}
             </div>
           </div>

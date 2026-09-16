@@ -15,19 +15,22 @@ model AdminUser {
 }
 
 model Restaurant {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  description String
-  address     String
-  imageUrl    String
-  tags        String[]
-  openTime    String?
-  closeTime   String?
-  priceMin    Int?
-  priceMax    Int?
-  createdAt   DateTime @default(now())
-  reviews     Review[]
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  description     String
+  address         String
+  imageUrl        String
+  tags            String[]
+  openTime        String?
+  closeTime       String?
+  priceMin        Int?
+  priceMax        Int?
+  metaTitle       String?
+  metaDescription String?
+  metaImageUrl    String?
+  createdAt       DateTime @default(now())
+  reviews         Review[]
 }
 
 model Review {

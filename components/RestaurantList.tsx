@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   RestaurantCard,
   type RestaurantListItem,
@@ -28,11 +28,14 @@ function usePageSize() {
 
 export function RestaurantList({
   restaurants,
+  totalUnfiltered,
 }: {
   restaurants: RestaurantListItem[];
+  totalUnfiltered?: number;
 }) {
   const pageSize = usePageSize();
   const [page, setPage] = useState(0);
+  const headingRef = useRef<HTMLHeadingElement>(null);
   const totalPages = Math.max(1, Math.ceil(restaurants.length / pageSize));
   const safePage = Math.min(page, totalPages - 1);
   const start = safePage * pageSize;
@@ -41,13 +44,18 @@ export function RestaurantList({
   const from = restaurants.length === 0 ? 0 : start + 1;
   const to = Math.min(start + pageSize, restaurants.length);
   const showPager = restaurants.length > pageSize;
+  const filteredOut =
+    typeof totalUnfiltered === "number" &&
+    totalUnfiltered > restaurants.length;
 
   useEffect(() => {
     setPage(0);
-  }, [pageSize]);
+  }, [pageSize, restaurants]);
 
   function goTo(next: number) {
-    setPage(Math.max(0, Math.min(totalPages - 1, next)));
+    const target = Math.max(0, Math.min(totalPages - 1, next));
+    setPage(target);
+    headingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   return (
@@ -55,31 +63,45 @@ export function RestaurantList({
       className="restaurants-section section-shell"
       aria-labelledby="restaurants-heading"
     >
-      <div className="section-label">03 — Đi ăn thôi</div>
       <div className="restaurants-heading">
         <div>
-          <h2 id="restaurants-heading">Quán ăn trưa quanh đây</h2>
+          <h2 id="restaurants-heading" ref={headingRef}>
+            Quán ăn trưa quanh đây
+          </h2>
           <p>
             Những địa chỉ gần 219 Trung Kính, đủ gần để đi ăn trưa mà không cần
             vội.
           </p>
+          {filteredOut && (
+            <p className="restaurants-filter-note">
+              Đang hiện {restaurants.length}/{totalUnfiltered} quán theo bộ lọc.
+            </p>
+          )}
         </div>
       </div>
 
-      <div className="restaurant-list" aria-live="polite">
-        {pageItems.map((restaurant, index) => (
-          <RestaurantCard
-            key={restaurant.id}
-            restaurant={restaurant}
-            index={start + index}
-          />
-        ))}
-      </div>
+      {restaurants.length === 0 ? (
+        <p className="restaurants-empty">
+          Không có quán nào khớp bộ lọc. Thử đổi giá, loại món, hoặc tắt “Đang
+          mở”.
+        </p>
+      ) : (
+        <div className="restaurant-list" aria-live="polite">
+          {pageItems.map((restaurant, index) => (
+            <RestaurantCard
+              key={restaurant.id}
+              restaurant={restaurant}
+              index={start + index}
+              priority={index === 0 && safePage === 0}
+            />
+          ))}
+        </div>
+      )}
 
       {restaurants.length > 0 && (
         <div className="restaurant-pagination">
           <p className="restaurant-pagination-meta">
-            {from}–{to} / {restaurants.length} quán
+            {from}–{to} trong {restaurants.length} quán
           </p>
           {showPager && (
             <nav
@@ -91,8 +113,14 @@ export function RestaurantList({
                 className="restaurant-page-btn"
                 onClick={() => goTo(safePage - 1)}
                 disabled={safePage === 0}
+                aria-label="Trang trước"
               >
-                Trước
+                <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M12.7 4.3a1 1 0 0 1 0 1.4L8.4 10l4.3 4.3a1 1 0 1 1-1.4 1.4l-5-5a1 1 0 0 1 0-1.4l5-5a1 1 0 0 1 1.4 0z"
+                  />
+                </svg>
               </button>
               <ol className="restaurant-page-numbers">
                 {Array.from({ length: totalPages }, (_, i) => (
@@ -103,6 +131,7 @@ export function RestaurantList({
                         i === safePage ? " is-active" : ""
                       }`}
                       onClick={() => goTo(i)}
+                      aria-label={`Trang ${i + 1}`}
                       aria-current={i === safePage ? "page" : undefined}
                     >
                       {i + 1}
@@ -115,8 +144,14 @@ export function RestaurantList({
                 className="restaurant-page-btn"
                 onClick={() => goTo(safePage + 1)}
                 disabled={safePage >= totalPages - 1}
+                aria-label="Trang sau"
               >
-                Sau
+                <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M7.3 4.3a1 1 0 0 1 1.4 0l5 5a1 1 0 0 1 0 1.4l-5 5a1 1 0 1 1-1.4-1.4L11.6 10 7.3 5.7a1 1 0 0 1 0-1.4z"
+                  />
+                </svg>
               </button>
             </nav>
           )}

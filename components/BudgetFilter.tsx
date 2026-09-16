@@ -16,14 +16,17 @@ const BUDGET_OPTIONS: BudgetOption[] = [
 ];
 
 export function BudgetFilter({
+  value,
   onChange,
 }: {
+  value: number | null;
   onChange: (maxBudget: number | null) => void;
 }) {
-  const [selected, setSelected] = useState<string>("all");
+  const selected =
+    BUDGET_OPTIONS.find((o) => o.max === value)?.id ??
+    (value === null ? "all" : "all");
 
   function handleSelect(optionId: string) {
-    setSelected(optionId);
     const option = BUDGET_OPTIONS.find((o) => o.id === optionId);
     onChange(option?.max ?? null);
   }
