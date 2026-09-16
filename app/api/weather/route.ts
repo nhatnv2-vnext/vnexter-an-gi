@@ -10,6 +10,8 @@ import {
   weatherIconFromCode,
 } from "@/lib/weather";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const restaurants = await prisma.restaurant.findMany({
     select: { id: true, name: true, tags: true },
