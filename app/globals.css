@@ -264,6 +264,7 @@ button {
 .spinner-filters {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
   gap: 1.5rem;
   align-items: flex-start;
 }
@@ -271,6 +272,7 @@ button {
 @media (max-width: 768px) {
   .spinner-filters {
     flex-direction: column;
+    justify-content: flex-start;
     gap: 1.5rem;
   }
 }
