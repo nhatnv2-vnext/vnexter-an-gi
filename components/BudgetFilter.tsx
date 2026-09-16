@@ -30,7 +30,7 @@ export function BudgetFilter({
 
   return (
     <div className="budget-filter">
-      <label className="budget-filter-label">Ngân sách trưa</label>
+      <label className="budget-filter-label">Tìm quán trong khoảng giá</label>
       <div className="budget-filter-chips">
         {BUDGET_OPTIONS.map((option) => (
           <button

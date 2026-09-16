@@ -325,7 +325,8 @@ button {
   gap: 0.75rem;
 }
 
-.budget-filter-label {
+.budget-filter-label,
+.cuisine-filter-label {
   display: block;
   color: var(--ink);
   font-size: 0.875rem;

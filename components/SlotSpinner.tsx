@@ -59,7 +59,7 @@ export function SlotSpinner({
   const [reveal, setReveal] = useState(false);
   const [offset, setOffset] = useState(0);
   const [animate, setAnimate] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState<string>("mon-nuoc");
+  const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const viewportRef = useRef<HTMLDivElement>(null);
   const mounted = useRef(true);
 
@@ -197,18 +197,21 @@ export function SlotSpinner({
         <div className="spinner-controls">
           <div className="spinner-filters">
             <BudgetFilter onChange={onBudgetChange} />
-            <div className="cuisine-filters">
-              {CUISINE_FILTERS.map((filter) => (
-                <button
-                  key={filter.id}
-                  type="button"
-                  className={`filter-chip${selectedFilter === filter.id ? " is-active" : ""}`}
-                  onClick={() => setSelectedFilter(filter.id)}
-                  disabled={spinning}
-                >
-                  {filter.label}
-                </button>
-              ))}
+            <div className="cuisine-filter-group">
+              <label className="cuisine-filter-label">Loại đồ ăn</label>
+              <div className="cuisine-filters">
+                {CUISINE_FILTERS.map((filter) => (
+                  <button
+                    key={filter.id}
+                    type="button"
+                    className={`filter-chip${selectedFilter === filter.id ? " is-active" : ""}`}
+                    onClick={() => setSelectedFilter(filter.id)}
+                    disabled={spinning}
+                  >
+                    {filter.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
