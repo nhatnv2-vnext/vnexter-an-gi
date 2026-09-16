@@ -15,6 +15,8 @@ type Props = {
     address: string;
     imageUrl: string;
     tags: string[];
+    openTime?: string | null;
+    closeTime?: string | null;
   };
 };
 
@@ -26,6 +28,8 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
   const [description, setDescription] = useState(initial?.description ?? "");
   const [address, setAddress] = useState(initial?.address ?? "");
   const [imageUrl, setImageUrl] = useState(initial?.imageUrl ?? "");
+  const [openTime, setOpenTime] = useState(initial?.openTime ?? "");
+  const [closeTime, setCloseTime] = useState(initial?.closeTime ?? "");
   const [selectedTags, setSelectedTags] = useState<Set<string>>(
     new Set(initial?.tags ?? [])
   );
@@ -81,6 +85,8 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
       address,
       imageUrl,
       tags: allTags,
+      openTime: openTime || null,
+      closeTime: closeTime || null,
     };
     const res = await fetch(
       mode === "create"
@@ -135,6 +141,28 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
       <label>
         Địa chỉ
         <input value={address} onChange={(e) => setAddress(e.target.value)} required />
+      </label>
+      <label>
+        Giờ mở cửa (tùy chọn)
+        <input 
+          value={openTime} 
+          onChange={(e) => setOpenTime(e.target.value)} 
+          placeholder="Ví dụ: 11:00"
+        />
+        <span className="admin-field-hint">
+          Giờ mở cửa của quán, ví dụ: 11:00 hoặc 11h
+        </span>
+      </label>
+      <label>
+        Giờ đóng cửa (tùy chọn)
+        <input 
+          value={closeTime} 
+          onChange={(e) => setCloseTime(e.target.value)} 
+          placeholder="Ví dụ: 14:00"
+        />
+        <span className="admin-field-hint">
+          Giờ đóng cửa của quán, ví dụ: 14:00 hoặc 14h
+        </span>
       </label>
       <label>
         Tags

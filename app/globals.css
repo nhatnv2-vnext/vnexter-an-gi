@@ -274,6 +274,45 @@ button {
   line-height: 1.75;
 }
 
+.cuisine-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-chip {
+  appearance: none;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(26, 26, 29, 0.72);
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.filter-chip:hover:not(:disabled) {
+  border-color: var(--sun);
+  color: var(--ink);
+  background: rgba(255, 106, 26, 0.08);
+}
+
+.filter-chip.is-active {
+  border-color: var(--sun);
+  background: var(--sun);
+  color: #fff;
+  font-weight: 600;
+}
+
+.filter-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .slot-machine {
   width: 100%;
   max-width: 100%;
@@ -777,6 +816,18 @@ button {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+.restaurant-hours-badge {
+  margin-left: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(255, 106, 26, 0.15);
+  color: var(--sun-bright);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: none;
 }
 
 .weather-content h2 {

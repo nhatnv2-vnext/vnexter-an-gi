@@ -9,6 +9,8 @@ export type RestaurantListItem = {
   imageUrl: string;
   avgRating: number;
   reviewCount: number;
+  openTime?: string | null;
+  closeTime?: string | null;
 };
 
 export function RestaurantCard({
@@ -22,6 +24,10 @@ export function RestaurantCard({
     restaurant.reviewCount > 0
       ? `${restaurant.avgRating.toFixed(1)} / 5 · ${restaurant.reviewCount} đánh giá`
       : "Chưa có đánh giá";
+
+  const hoursLabel = restaurant.closeTime
+    ? `Mở đến ${restaurant.closeTime}`
+    : null;
 
   return (
     <article className="restaurant-row">
@@ -43,6 +49,9 @@ export function RestaurantCard({
       <div className="restaurant-copy">
         <p className="restaurant-rating">
           <span aria-hidden="true">★</span> {rating}
+          {hoursLabel && (
+            <span className="restaurant-hours-badge">{hoursLabel}</span>
+          )}
         </p>
         <h3>
           <Link href={`/restaurants/${restaurant.id}`}>{restaurant.name}</Link>

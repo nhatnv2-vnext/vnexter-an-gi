@@ -5,6 +5,8 @@ export type RestaurantInput = {
   address: string;
   imageUrl: string;
   tags: string[];
+  openTime?: string | null;
+  closeTime?: string | null;
 };
 
 export function slugifyName(name: string): string {
@@ -71,6 +73,9 @@ export function validateRestaurantInput(
   const slug = slugRaw || slugifyName(name);
   if (!slug) return { ok: false, error: "Slug không hợp lệ" };
 
+  const openTime = typeof body.openTime === "string" ? body.openTime.trim() || null : null;
+  const closeTime = typeof body.closeTime === "string" ? body.closeTime.trim() || null : null;
+
   return {
     ok: true,
     data: {
@@ -80,6 +85,8 @@ export function validateRestaurantInput(
       address,
       imageUrl,
       tags: parseTags(body.tags),
+      openTime,
+      closeTime,
     },
   };
 }

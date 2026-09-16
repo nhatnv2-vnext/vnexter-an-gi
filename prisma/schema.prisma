@@ -22,6 +22,8 @@ model Restaurant {
   address     String
   imageUrl    String
   tags        String[]
+  openTime    String?
+  closeTime   String?
   createdAt   DateTime @default(now())
   reviews     Review[]
 }

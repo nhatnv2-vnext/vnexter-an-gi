@@ -8,11 +8,25 @@ export type RestaurantSummary = {
   id: string;
   name: string;
   imageUrl: string;
+  tags: string[];
+};
+
+type CuisineFilter = {
+  id: string;
+  label: string;
+  tags: string[];
 };
 
 const ITEM_WIDTH = 148;
 const REEL_LOOPS = 28;
 const SPIN_MS = 4800;
+
+const CUISINE_FILTERS: CuisineFilter[] = [
+  { id: "all", label: "Tất cả", tags: [] },
+  { id: "mon-nuoc", label: "Món nước", tags: ["pho", "bun", "nong"] },
+  { id: "com", label: "Cơm", tags: ["com"] },
+  { id: "cuon", label: "Cuốn", tags: ["cuon"] },
+];
 
 function prefersReducedMotion() {
   if (typeof window === "undefined") return false;
@@ -30,15 +44,25 @@ export function SlotSpinner({
   const [reveal, setReveal] = useState(false);
   const [offset, setOffset] = useState(0);
   const [animate, setAnimate] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const viewportRef = useRef<HTMLDivElement>(null);
   const mounted = useRef(true);
 
+  const filteredRestaurants = useMemo(() => {
+    if (selectedFilter === "all") return restaurants;
+    const filter = CUISINE_FILTERS.find((f) => f.id === selectedFilter);
+    if (!filter || filter.tags.length === 0) return restaurants;
+    return restaurants.filter((r) =>
+      filter.tags.some((tag) => r.tags.includes(tag))
+    );
+  }, [restaurants, selectedFilter]);
+
   const reel = useMemo(() => {
-    if (restaurants.length === 0) return [] as RestaurantSummary[];
-    return Array.from({ length: REEL_LOOPS * restaurants.length }, (_, i) => {
-      return restaurants[i % restaurants.length];
+    if (filteredRestaurants.length === 0) return [] as RestaurantSummary[];
+    return Array.from({ length: REEL_LOOPS * filteredRestaurants.length }, (_, i) => {
+      return filteredRestaurants[i % filteredRestaurants.length];
     });
-  }, [restaurants]);
+  }, [filteredRestaurants]);
 
   useEffect(() => {
     mounted.current = true;
@@ -70,9 +94,9 @@ export function SlotSpinner({
   }
 
   function spin() {
-    if (spinning || restaurants.length === 0 || reel.length === 0) return;
+    if (spinning || filteredRestaurants.length === 0 || reel.length === 0) return;
 
-    const pick = restaurants[Math.floor(Math.random() * restaurants.length)];
+    const pick = filteredRestaurants[Math.floor(Math.random() * filteredRestaurants.length)];
     const viewportWidth = viewportRef.current?.clientWidth ?? 360;
 
     const minIndex = Math.floor(reel.length * 0.72);
@@ -139,6 +163,20 @@ export function SlotSpinner({
           </p>
         </div>
 
+        <div className="cuisine-filters">
+          {CUISINE_FILTERS.map((filter) => (
+            <button
+              key={filter.id}
+              type="button"
+              className={`filter-chip${selectedFilter === filter.id ? " is-active" : ""}`}
+              onClick={() => setSelectedFilter(filter.id)}
+              disabled={spinning}
+            >
+              {filter.label}
+            </button>
+          ))}
+        </div>
+
         <div className="slot-machine">
           <div className="case-opening">
             <span className="slot-eyebrow">
@@ -191,13 +229,18 @@ export function SlotSpinner({
             <button
               type="button"
               onClick={spin}
-              disabled={spinning || restaurants.length === 0}
+              disabled={spinning || filteredRestaurants.length === 0}
             >
               <span>{spinning ? "Đang quay" : "Quay ngay"}</span>
               <span aria-hidden="true">↗</span>
             </button>
             {restaurants.length === 0 && (
               <p className="slot-empty">Chưa có quán để quay.</p>
+            )}
+            {filteredRestaurants.length === 0 && restaurants.length > 0 && (
+              <p className="slot-empty">
+                Không có quán nào phù hợp với bộ lọc này. Thử chọn bộ lọc khác nhé.
+              </p>
             )}
             {winner && !spinning && !reveal && (
               <Link className="result-link" href={`/restaurants/${winner.id}`}>
