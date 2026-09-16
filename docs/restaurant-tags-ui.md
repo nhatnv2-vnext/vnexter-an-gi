@@ -2,7 +2,7 @@
 
 ## Overview
 
-The admin restaurant form now uses a multi-select checkbox interface for choosing tags instead of a free-text comma-separated input.
+The admin restaurant form uses a multi-select pulldown (dropdown) for choosing tags instead of a free-text comma-separated input. Users can select multiple tags by holding Ctrl (Windows) or Cmd (Mac).
 
 ## Standard Tags Catalog
 
@@ -11,20 +11,22 @@ Location: `lib/restaurant-tags.ts`
 Based on research team input, the catalog includes:
 
 ### Primary Research Tags
-- **nong** (Nóng) - Hot dishes
-- **pho** (Phở) - Pho noodle soup
-- **bun** (Bún) - Rice vermicelli dishes
-- **com** (Cơm) - Rice dishes
-- **cuon** (Cuốn) - Rolled/wrapped dishes
-- **mat** (Mát) - Cool/refreshing dishes
-- **nhe** (Nhẹ) - Light meals
-- **dieuhoa** (Có điều hòa) - Air-conditioned venue
-- **trongnha** (Ngồi trong nhà) - Indoor seating
+- **pho** → "Phở" - Pho noodle soup
+- **nong** → "Món nóng" - Hot dishes
+- **bun** → "Bún" - Rice vermicelli dishes
+- **com** → "Cơm" - Rice dishes
+- **cuon** → "Cuốn" - Rolled/wrapped dishes
+- **mat** → "Mát / món mát" - Cool/refreshing dishes
+- **nhe** → "Nhẹ bụng" - Light meals
+- **dieuhoa** → "Có điều hòa" - Air-conditioned venue
+- **trongnha** → "Trong nhà" - Indoor seating
 
 ### Weather System Tags
-- **trua** (Trưa) - Lunch time
-- **cay** (Cay) - Spicy
-- **do-uong** (Đồ uống) - Beverages
+- **trua** → "Ăn trưa" - Lunch time
+- **cay** → "Cay" - Spicy
+- **do-uong** → "Đồ uống" - Beverages
+
+**Note**: Slug values (pho, bun, dieuhoa, etc.) are stored in the database. Vietnamese labels with diacritics are display-only for admin UX.
 
 ```typescript
 export const RESTAURANT_TAGS: RestaurantTag[] = [
@@ -48,31 +50,32 @@ export const RESTAURANT_TAGS: RestaurantTag[] = [
 
 ## UI Layout
 
-### Checkbox Grid
+### Multi-Select Pulldown
 
-- Responsive grid layout: `repeat(auto-fill, minmax(7rem, 1fr))`
-- Each checkbox shows Vietnamese label
-- Hover effect for better UX
-- Selected tags are checked
+- Native HTML `<select multiple>` element
+- 8 visible rows (size="8")
+- Vietnamese labels with full diacritics for readability
+- Users hold Ctrl/Cmd to select multiple options
+- Selected options are highlighted
 
 ### Custom Tags Preservation
 
 If an existing restaurant has tags not in the standard catalog, they are:
-- Displayed as read-only chips below the checkbox grid
+- Displayed as a muted note below the select
 - Preserved when saving
 - Not lost during edit operations
 
 ## Form Behavior
 
 ### Create Mode
-- All checkboxes start unchecked
-- User selects tags from the standard catalog
-- Submits as array of tag IDs
+- Multi-select starts empty
+- User selects tags by clicking while holding Ctrl (Windows) or Cmd (Mac)
+- Submits as array of slug values (e.g., `["pho", "bun", "dieuhoa"]`)
 
 ### Edit Mode
-- Checkboxes pre-checked based on restaurant's existing tags
-- Standard tags: shown as checkboxes (can be toggled)
-- Custom tags: shown as chips (preserved automatically)
+- Multi-select pre-selects restaurant's existing standard tags
+- Standard tags: shown in the dropdown (can be selected/deselected)
+- Custom tags: shown in a note below (preserved automatically)
 - Both standard and custom tags submitted together
 
 ## Backend Compatibility
@@ -93,12 +96,10 @@ The `parseTags()` function in `lib/restaurant-admin.ts` handles both formats.
 
 CSS classes in `app/globals.css`:
 
-- `.admin-tags-fieldset` - Container fieldset
-- `.admin-tags-grid` - Responsive checkbox grid
-- `.admin-tag-checkbox` - Individual checkbox label
-- `.admin-custom-tags` - Custom tags section
-- `.admin-tags-chips` - Chips container
-- `.admin-tag-chip` - Individual custom tag chip
+- `.admin-tags-select` - Multi-select dropdown styling
+- `.admin-tags-select option` - Individual option padding
+- `.admin-tags-select option:checked` - Selected option highlight
+- `.admin-custom-tags-note` - Custom tags display note
 
 ## Weather Integration
 
@@ -112,10 +113,12 @@ This allows the system to recommend restaurants with appropriate comfort feature
 
 ## Benefits
 
-1. **Better UX**: Visual selection instead of typing
-2. **Validation**: Only standard tags can be selected
-3. **Consistency**: Same tags across all restaurants
-4. **Discoverability**: Users see all available tags
-5. **Preservation**: Custom tags not lost during edits
-6. **Backward Compatible**: API still accepts both formats
-7. **Weather-Aware**: New venue comfort tags (dieuhoa, trongnha) integrate with hot weather suggestions
+1. **Better UX**: Multi-select pulldown instead of typing
+2. **Readable Labels**: Vietnamese with full diacritics for admin clarity
+3. **Validation**: Only standard tags can be selected
+4. **Consistency**: Same tags across all restaurants
+5. **Discoverability**: Users see all available tags
+6. **Preservation**: Custom tags not lost during edits
+7. **Backward Compatible**: API still accepts both formats
+8. **Weather-Aware**: New venue comfort tags (dieuhoa, trongnha) integrate with hot weather suggestions
+9. **Native Control**: Standard HTML element, no third-party dependencies

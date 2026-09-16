@@ -45,16 +45,10 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
     if (!slugTouched) setSlug(slugifyName(value));
   }
 
-  function toggleTag(tagId: string) {
-    setSelectedTags((prev) => {
-      const next = new Set(prev);
-      if (next.has(tagId)) {
-        next.delete(tagId);
-      } else {
-        next.add(tagId);
-      }
-      return next;
-    });
+  function onTagsChange(event: React.ChangeEvent<HTMLSelectElement>) {
+    const options = Array.from(event.target.selectedOptions);
+    const selected = options.map((opt) => opt.value);
+    setSelectedTags(new Set(selected));
   }
 
   async function onUpload(file: File | null) {
@@ -142,35 +136,32 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
         Địa chỉ
         <input value={address} onChange={(e) => setAddress(e.target.value)} required />
       </label>
-      <fieldset className="admin-tags-fieldset">
-        <legend>Tags</legend>
-        <div className="admin-tags-grid">
+      <label>
+        Tags
+        <select
+          multiple
+          value={Array.from(selectedTags)}
+          onChange={onTagsChange}
+          className="admin-tags-select"
+          size={8}
+        >
           {RESTAURANT_TAGS.map((tag) => (
-            <label key={tag.id} className="admin-tag-checkbox">
-              <input
-                type="checkbox"
-                checked={selectedTags.has(tag.id)}
-                onChange={() => toggleTag(tag.id)}
-              />
-              <span>{tag.label}</span>
-            </label>
+            <option key={tag.id} value={tag.id}>
+              {tag.label}
+            </option>
           ))}
-        </div>
+        </select>
+        <span className="admin-field-hint">
+          Giữ Ctrl (Windows) hoặc Cmd (Mac) để chọn nhiều tags. Các giá trị lưu vào database là slug (pho, bun, dieuhoa, v.v.).
+        </span>
         {customTags.length > 0 && (
-          <div className="admin-custom-tags">
-            <p className="admin-muted">
-              Tags tùy chỉnh (từ database):
-            </p>
-            <div className="admin-tags-chips">
-              {customTags.map((tag) => (
-                <span key={tag} className="admin-tag-chip">
-                  {tag}
-                </span>
-              ))}
-            </div>
+          <div className="admin-custom-tags-note">
+            <span className="admin-muted">
+              Tags tùy chỉnh từ database: {customTags.join(", ")}
+            </span>
           </div>
         )}
-      </fieldset>
+      </label>
       <fieldset className="admin-image-fields">
         <legend>Ảnh quán</legend>
         <p className="admin-muted">
