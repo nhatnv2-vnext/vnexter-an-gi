@@ -36,5 +36,8 @@ export const authConfig = {
       return session;
     },
   },
+  // Trust X-Forwarded-Host and X-Forwarded-Proto headers from reverse proxies.
+  // NextAuth v5 auto-detects the host URL from request headers. If admin redirects
+  // to localhost in production, set AUTH_URL env var to your public domain.
   trustHost: true,
 } satisfies NextAuthConfig;
