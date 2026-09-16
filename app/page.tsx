@@ -32,10 +32,11 @@ export default async function Home() {
       <Hero />
       <div className="home-sections">
         <SlotSpinner
-          restaurants={restaurants.map(({ id, name, imageUrl }) => ({
+          restaurants={restaurants.map(({ id, name, imageUrl, tags }) => ({
             id,
             name,
             imageUrl,
+            tags,
           }))}
         />
         <WeatherSuggestion />
