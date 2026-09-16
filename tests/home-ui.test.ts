@@ -8,7 +8,7 @@ describe("home page UI", () => {
   it("renders the four lunch-focused sections in the required order", () => {
     const page = projectFile("app/page.tsx");
     const hero = page.indexOf("<Hero");
-    const spinner = page.indexOf("<SlotSpinner");
+    const spinner = page.indexOf("<SpinnerSection");
     const weather = page.indexOf("<WeatherSuggestion");
     const list = page.indexOf("<RestaurantList");
 

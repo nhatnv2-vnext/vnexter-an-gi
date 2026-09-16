@@ -7,6 +7,8 @@ export type RestaurantInput = {
   tags: string[];
   openTime?: string | null;
   closeTime?: string | null;
+  priceMin?: number | null;
+  priceMax?: number | null;
 };
 
 export function slugifyName(name: string): string {
@@ -75,6 +77,9 @@ export function validateRestaurantInput(
 
   const openTime = typeof body.openTime === "string" ? body.openTime.trim() || null : null;
   const closeTime = typeof body.closeTime === "string" ? body.closeTime.trim() || null : null;
+  
+  const priceMin = typeof body.priceMin === "number" ? body.priceMin : null;
+  const priceMax = typeof body.priceMax === "number" ? body.priceMax : null;
 
   return {
     ok: true,
@@ -87,6 +92,8 @@ export function validateRestaurantInput(
       tags: parseTags(body.tags),
       openTime,
       closeTime,
+      priceMin,
+      priceMax,
     },
   };
 }

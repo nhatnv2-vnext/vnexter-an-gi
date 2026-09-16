@@ -24,6 +24,8 @@ model Restaurant {
   tags        String[]
   openTime    String?
   closeTime   String?
+  priceMin    Int?
+  priceMax    Int?
   createdAt   DateTime @default(now())
   reviews     Review[]
 }

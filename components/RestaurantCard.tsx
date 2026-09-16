@@ -11,6 +11,8 @@ export type RestaurantListItem = {
   reviewCount: number;
   openTime?: string | null;
   closeTime?: string | null;
+  priceMin?: number | null;
+  priceMax?: number | null;
 };
 
 export function RestaurantCard({
@@ -27,6 +29,14 @@ export function RestaurantCard({
 
   const hoursLabel = restaurant.closeTime
     ? `Mở đến ${restaurant.closeTime}`
+    : null;
+
+  const priceLabel = restaurant.priceMin && restaurant.priceMax
+    ? `${(restaurant.priceMin / 1000).toFixed(0)}–${(restaurant.priceMax / 1000).toFixed(0)}k`
+    : restaurant.priceMin
+    ? `Từ ${(restaurant.priceMin / 1000).toFixed(0)}k`
+    : restaurant.priceMax
+    ? `Đến ${(restaurant.priceMax / 1000).toFixed(0)}k`
     : null;
 
   return (
@@ -51,6 +61,9 @@ export function RestaurantCard({
           <span aria-hidden="true">★</span> {rating}
           {hoursLabel && (
             <span className="restaurant-hours-badge">{hoursLabel}</span>
+          )}
+          {priceLabel && (
+            <span className="restaurant-price-badge">{priceLabel}</span>
           )}
         </p>
         <h3>
