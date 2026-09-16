@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { BudgetFilter } from "./BudgetFilter";
 import { SlotSpinner, RestaurantSummary } from "./SlotSpinner";
 
 export function SpinnerSection({
@@ -14,8 +13,11 @@ export function SpinnerSection({
   return (
     <section className="spinner-section section-shell" id="quay-trua">
       <div className="section-label">01 — Chọn nhanh</div>
-      <BudgetFilter onChange={setBudgetMax} />
-      <SlotSpinner restaurants={restaurants} budgetMax={budgetMax} />
+      <SlotSpinner 
+        restaurants={restaurants} 
+        budgetMax={budgetMax}
+        onBudgetChange={setBudgetMax}
+      />
     </section>
   );
 }

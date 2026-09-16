@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { BudgetFilter } from "./BudgetFilter";
 
 export type RestaurantSummary = {
   id: string;
@@ -46,9 +47,11 @@ function prefersReducedMotion() {
 export function SlotSpinner({
   restaurants,
   budgetMax,
+  onBudgetChange,
 }: {
   restaurants: RestaurantSummary[];
   budgetMax?: number | null;
+  onBudgetChange: (maxBudget: number | null) => void;
 }) {
   const [spinning, setSpinning] = useState(false);
   const [winner, setWinner] = useState<RestaurantSummary | null>(null);
@@ -192,6 +195,7 @@ export function SlotSpinner({
         </div>
 
         <div className="spinner-controls">
+          <BudgetFilter onChange={onBudgetChange} />
           <div className="cuisine-filters">
             {CUISINE_FILTERS.map((filter) => (
               <button
