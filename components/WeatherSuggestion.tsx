@@ -71,9 +71,10 @@ export function WeatherSuggestion() {
     (weather ? iconFromCondition(weather.condition) : "unknown");
 
   return (
-    <section className="weather-section section-shell" aria-labelledby="weather-heading">
-      <div className="section-label">02 — Thời tiết hôm nay</div>
-      <div className="weather-layout">
+    <section className="weather-section" aria-labelledby="weather-heading">
+      <div className="weather-section-inner">
+        <div className="section-label">02 — Thời tiết hôm nay</div>
+        <div className="weather-layout">
         <div
           className={`weather-card is-${weather?.condition ?? "loading"} is-icon-${iconKind}`}
           aria-live="polite"
@@ -139,6 +140,7 @@ export function WeatherSuggestion() {
             </Link>
           )}
         </div>
+      </div>
       </div>
     </section>
   );
