@@ -35,6 +35,14 @@ export default async function RestaurantPage({ params }: RestaurantPageProps) {
     ? restaurant.reviews.find((review) => review.visitorId === visitorId) ?? null
     : null;
 
+  const priceLabel = restaurant.priceMin && restaurant.priceMax
+    ? `${(restaurant.priceMin / 1000).toFixed(0)}–${(restaurant.priceMax / 1000).toFixed(0)}k`
+    : restaurant.priceMin
+    ? `Từ ${(restaurant.priceMin / 1000).toFixed(0)}k`
+    : restaurant.priceMax
+    ? `Đến ${(restaurant.priceMax / 1000).toFixed(0)}k`
+    : null;
+
   return (
     <main className="detail-page">
       <header className="detail-hero">
@@ -51,6 +59,11 @@ export default async function RestaurantPage({ params }: RestaurantPageProps) {
             <p className="detail-address">
               <span aria-hidden="true">⌖</span> {restaurant.address}
             </p>
+            {priceLabel && (
+              <p className="detail-price">
+                <span aria-hidden="true">💰</span> {priceLabel}
+              </p>
+            )}
             <div className="detail-rating-summary">
               <StarRating
                 value={Math.round(avgRating)}
