@@ -15,18 +15,18 @@ export type RestaurantTag = {
 
 export const RESTAURANT_TAGS: RestaurantTag[] = [
   // Primary research tags
+  { id: "nong", label: "Nóng" },
   { id: "pho", label: "Phở" },
-  { id: "nong", label: "Món nóng" },
   { id: "bun", label: "Bún" },
   { id: "com", label: "Cơm" },
   { id: "cuon", label: "Cuốn" },
-  { id: "mat", label: "Mát / món mát" },
-  { id: "nhe", label: "Nhẹ bụng" },
+  { id: "mat", label: "Mát" },
+  { id: "nhe", label: "Nhẹ" },
   { id: "dieuhoa", label: "Có điều hòa" },
   { id: "trongnha", label: "Trong nhà" },
   
   // Weather system / existing data tags
-  { id: "trua", label: "Ăn trưa" },
+  { id: "trua", label: "Bữa trưa" },
   { id: "cay", label: "Cay" },
   { id: "do-uong", label: "Đồ uống" },
 ];

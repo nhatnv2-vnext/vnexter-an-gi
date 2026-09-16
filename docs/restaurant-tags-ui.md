@@ -11,22 +11,22 @@ Location: `lib/restaurant-tags.ts`
 Based on research team input, the catalog includes:
 
 ### Primary Research Tags
+- **nong** → "Nóng" - Hot dishes
 - **pho** → "Phở" - Pho noodle soup
-- **nong** → "Món nóng" - Hot dishes
 - **bun** → "Bún" - Rice vermicelli dishes
 - **com** → "Cơm" - Rice dishes
 - **cuon** → "Cuốn" - Rolled/wrapped dishes
-- **mat** → "Mát / món mát" - Cool/refreshing dishes
-- **nhe** → "Nhẹ bụng" - Light meals
+- **mat** → "Mát" - Cool/refreshing dishes
+- **nhe** → "Nhẹ" - Light meals
 - **dieuhoa** → "Có điều hòa" - Air-conditioned venue
 - **trongnha** → "Trong nhà" - Indoor seating
 
 ### Weather System Tags
-- **trua** → "Ăn trưa" - Lunch time
+- **trua** → "Bữa trưa" - Lunch time
 - **cay** → "Cay" - Spicy
 - **do-uong** → "Đồ uống" - Beverages
 
-**Note**: Slug values (pho, bun, dieuhoa, etc.) are stored in the database. Vietnamese labels with diacritics are display-only for admin UX.
+**Note**: Slug values (nong, pho, bun, dieuhoa, etc.) are stored in the database. Vietnamese labels with diacritics are display-only for admin UX.
 
 ```typescript
 export const RESTAURANT_TAGS: RestaurantTag[] = [
