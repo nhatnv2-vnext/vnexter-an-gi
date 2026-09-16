@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { BudgetFilter } from "./BudgetFilter";
 
 export type RestaurantSummary = {
   id: string;
@@ -46,9 +47,11 @@ function prefersReducedMotion() {
 export function SlotSpinner({
   restaurants,
   budgetMax,
+  onBudgetChange,
 }: {
   restaurants: RestaurantSummary[];
   budgetMax?: number | null;
+  onBudgetChange: (maxBudget: number | null) => void;
 }) {
   const [spinning, setSpinning] = useState(false);
   const [winner, setWinner] = useState<RestaurantSummary | null>(null);
@@ -56,7 +59,7 @@ export function SlotSpinner({
   const [reveal, setReveal] = useState(false);
   const [offset, setOffset] = useState(0);
   const [animate, setAnimate] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState<string>("mon-nuoc");
+  const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const viewportRef = useRef<HTMLDivElement>(null);
   const mounted = useRef(true);
 
@@ -181,12 +184,7 @@ export function SlotSpinner({
   }
 
   return (
-    <section
-      className="spinner-section section-shell"
-      id="quay-trua"
-      aria-labelledby="spin-heading"
-    >
-      <div className="section-label">01 — Chọn nhanh</div>
+    <div aria-labelledby="spin-heading">
       <div className="spinner-layout">
         <div className="section-intro">
           <h2 id="spin-heading">Trưa nay ăn gì?</h2>
@@ -197,18 +195,24 @@ export function SlotSpinner({
         </div>
 
         <div className="spinner-controls">
-          <div className="cuisine-filters">
-            {CUISINE_FILTERS.map((filter) => (
-              <button
-                key={filter.id}
-                type="button"
-                className={`filter-chip${selectedFilter === filter.id ? " is-active" : ""}`}
-                onClick={() => setSelectedFilter(filter.id)}
-                disabled={spinning}
-              >
-                {filter.label}
-              </button>
-            ))}
+          <div className="spinner-filters">
+            <BudgetFilter onChange={onBudgetChange} />
+            <div className="cuisine-filter-group">
+              <label className="cuisine-filter-label">Loại đồ ăn</label>
+              <div className="cuisine-filters">
+                {CUISINE_FILTERS.map((filter) => (
+                  <button
+                    key={filter.id}
+                    type="button"
+                    className={`filter-chip${selectedFilter === filter.id ? " is-active" : ""}`}
+                    onClick={() => setSelectedFilter(filter.id)}
+                    disabled={spinning}
+                  >
+                    {filter.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="slot-machine">
@@ -332,6 +336,6 @@ export function SlotSpinner({
           </div>
         </div>
       )}
-    </section>
+    </div>
   );
 }
