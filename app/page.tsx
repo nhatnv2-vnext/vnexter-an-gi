@@ -1,6 +1,6 @@
 import { Hero } from "@/components/Hero";
 import { RestaurantList } from "@/components/RestaurantList";
-import { SlotSpinner } from "@/components/SlotSpinner";
+import { SpinnerSection } from "@/components/SpinnerSection";
 import { WeatherSuggestion } from "@/components/WeatherSuggestion";
 import { prisma } from "@/lib/prisma";
 
@@ -31,12 +31,14 @@ export default async function Home() {
     <main>
       <Hero />
       <div className="home-sections">
-        <SlotSpinner
-          restaurants={restaurants.map(({ id, name, imageUrl, tags }) => ({
+        <SpinnerSection
+          restaurants={restaurants.map(({ id, name, imageUrl, tags, priceMin, priceMax }) => ({
             id,
             name,
             imageUrl,
             tags,
+            priceMin,
+            priceMax,
           }))}
         />
         <WeatherSuggestion />

@@ -85,3 +85,68 @@ describe("open hours badge", () => {
     expect(css).toContain(".restaurant-hours-badge");
   });
 });
+
+describe("price range / budget filter", () => {
+  it("adds priceMin and priceMax fields to Prisma schema", () => {
+    const schema = projectFile("prisma/schema.prisma");
+
+    expect(schema).toContain("priceMin");
+    expect(schema).toContain("priceMax");
+    expect(schema).toContain("Int?");
+  });
+
+  it("includes price fields in RestaurantForm", () => {
+    const form = projectFile("components/admin/RestaurantForm.tsx");
+
+    expect(form).toContain("priceMin");
+    expect(form).toContain("priceMax");
+    expect(form).toContain("Giá từ");
+    expect(form).toContain("Giá đến");
+  });
+
+  it("validates and saves price range in restaurant-admin", () => {
+    const admin = projectFile("lib/restaurant-admin.ts");
+
+    expect(admin).toContain("priceMin");
+    expect(admin).toContain("priceMax");
+  });
+
+  it("displays price badge in RestaurantCard", () => {
+    const card = projectFile("components/RestaurantCard.tsx");
+
+    expect(card).toContain("priceLabel");
+    expect(card).toContain("restaurant-price-badge");
+  });
+
+  it("includes BudgetFilter component with Vietnamese labels", () => {
+    const filter = projectFile("components/BudgetFilter.tsx");
+
+    expect(filter).toContain("BUDGET_OPTIONS");
+    expect(filter).toContain("Ngân sách trưa");
+    expect(filter).toContain("Bất kỳ");
+  });
+
+  it("integrates budget filter with spin pool", () => {
+    const spinner = projectFile("components/SlotSpinner.tsx");
+
+    expect(spinner).toContain("budgetMax");
+    expect(spinner).toContain("priceMin");
+    expect(spinner).toContain("priceMax");
+  });
+
+  it("uses SpinnerSection wrapper for budget state", () => {
+    const section = projectFile("components/SpinnerSection.tsx");
+    const page = projectFile("app/page.tsx");
+
+    expect(section).toContain("BudgetFilter");
+    expect(section).toContain("SlotSpinner");
+    expect(page).toContain("SpinnerSection");
+  });
+
+  it("styles budget filter in CSS", () => {
+    const css = projectFile("app/globals.css");
+
+    expect(css).toContain(".budget-filter");
+    expect(css).toContain(".restaurant-price-badge");
+  });
+});

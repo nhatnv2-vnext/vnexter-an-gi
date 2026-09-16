@@ -9,6 +9,8 @@ export type RestaurantSummary = {
   name: string;
   imageUrl: string;
   tags: string[];
+  priceMin?: number | null;
+  priceMax?: number | null;
 };
 
 type CuisineFilter = {
@@ -35,8 +37,10 @@ function prefersReducedMotion() {
 
 export function SlotSpinner({
   restaurants,
+  budgetMax,
 }: {
   restaurants: RestaurantSummary[];
+  budgetMax?: number | null;
 }) {
   const [spinning, setSpinning] = useState(false);
   const [winner, setWinner] = useState<RestaurantSummary | null>(null);
@@ -49,13 +53,33 @@ export function SlotSpinner({
   const mounted = useRef(true);
 
   const filteredRestaurants = useMemo(() => {
-    if (selectedFilter === "all") return restaurants;
-    const filter = CUISINE_FILTERS.find((f) => f.id === selectedFilter);
-    if (!filter || filter.tags.length === 0) return restaurants;
-    return restaurants.filter((r) =>
-      filter.tags.some((tag) => r.tags.includes(tag))
-    );
-  }, [restaurants, selectedFilter]);
+    let filtered = restaurants;
+    
+    // Apply cuisine filter
+    if (selectedFilter !== "all") {
+      const filter = CUISINE_FILTERS.find((f) => f.id === selectedFilter);
+      if (filter && filter.tags.length > 0) {
+        filtered = filtered.filter((r) =>
+          filter.tags.some((tag) => r.tags.includes(tag))
+        );
+      }
+    }
+    
+    // Apply budget filter
+    if (budgetMax && budgetMax > 0) {
+      filtered = filtered.filter((r) => {
+        // Include restaurants without price data
+        if (!r.priceMin && !r.priceMax) return true;
+        // Include if min price is within budget
+        if (r.priceMin && r.priceMin <= budgetMax) return true;
+        // Include if max price is within budget
+        if (r.priceMax && r.priceMax <= budgetMax) return true;
+        return false;
+      });
+    }
+    
+    return filtered;
+  }, [restaurants, selectedFilter, budgetMax]);
 
   const reel = useMemo(() => {
     if (filteredRestaurants.length === 0) return [] as RestaurantSummary[];

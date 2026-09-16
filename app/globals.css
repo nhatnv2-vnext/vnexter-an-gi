@@ -281,6 +281,25 @@ button {
   margin-bottom: 1.5rem;
 }
 
+.budget-filter {
+  margin-bottom: 1.5rem;
+}
+
+.budget-filter-label {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.budget-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+}
+
 .filter-chip {
   appearance: none;
   padding: 0.5rem 1rem;
@@ -824,6 +843,18 @@ button {
   border-radius: 4px;
   background: rgba(255, 106, 26, 0.15);
   color: var(--sun-bright);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: none;
+}
+
+.restaurant-price-badge {
+  margin-left: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink);
   font-size: 0.65rem;
   font-weight: 600;
   letter-spacing: 0.08em;
