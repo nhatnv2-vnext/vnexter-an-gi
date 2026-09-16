@@ -22,10 +22,10 @@ const REEL_LOOPS = 28;
 const SPIN_MS = 4800;
 
 const CUISINE_FILTERS: CuisineFilter[] = [
-  { id: "all", label: "Tất cả", tags: [] },
   { id: "mon-nuoc", label: "Món nước", tags: ["pho", "bun", "nong"] },
   { id: "com", label: "Cơm", tags: ["com"] },
-  { id: "cuon", label: "Cuốn", tags: ["cuon"] },
+  { id: "cuon", label: "Cuốn", tags: ["cuon", "nhe"] },
+  { id: "all", label: "Tất cả", tags: [] },
 ];
 
 function prefersReducedMotion() {
@@ -44,7 +44,7 @@ export function SlotSpinner({
   const [reveal, setReveal] = useState(false);
   const [offset, setOffset] = useState(0);
   const [animate, setAnimate] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState<string>("all");
+  const [selectedFilter, setSelectedFilter] = useState<string>("mon-nuoc");
   const viewportRef = useRef<HTMLDivElement>(null);
   const mounted = useRef(true);
 
