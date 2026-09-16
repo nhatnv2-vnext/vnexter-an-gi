@@ -34,6 +34,8 @@ export default async function EditRestaurantPage({ params }: Props) {
           tags: restaurant.tags,
           openTime: restaurant.openTime,
           closeTime: restaurant.closeTime,
+          priceMin: restaurant.priceMin,
+          priceMax: restaurant.priceMax,
         }}
       />
     </div>

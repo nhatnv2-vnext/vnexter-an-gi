@@ -17,6 +17,8 @@ type Props = {
     tags: string[];
     openTime?: string | null;
     closeTime?: string | null;
+    priceMin?: number | null;
+    priceMax?: number | null;
   };
 };
 
@@ -30,6 +32,8 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
   const [imageUrl, setImageUrl] = useState(initial?.imageUrl ?? "");
   const [openTime, setOpenTime] = useState(initial?.openTime ?? "");
   const [closeTime, setCloseTime] = useState(initial?.closeTime ?? "");
+  const [priceMin, setPriceMin] = useState(initial?.priceMin?.toString() ?? "");
+  const [priceMax, setPriceMax] = useState(initial?.priceMax?.toString() ?? "");
   const [selectedTags, setSelectedTags] = useState<Set<string>>(
     new Set(initial?.tags ?? [])
   );
@@ -87,6 +91,8 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
       tags: allTags,
       openTime: openTime || null,
       closeTime: closeTime || null,
+      priceMin: priceMin ? parseInt(priceMin, 10) : null,
+      priceMax: priceMax ? parseInt(priceMax, 10) : null,
     };
     const res = await fetch(
       mode === "create"
@@ -162,6 +168,34 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
         />
         <span className="admin-field-hint">
           Giờ đóng cửa của quán, ví dụ: 14:00 hoặc 14h
+        </span>
+      </label>
+      <label>
+        Giá từ (tùy chọn)
+        <input 
+          type="number"
+          value={priceMin} 
+          onChange={(e) => setPriceMin(e.target.value)} 
+          placeholder="40000"
+          min="0"
+          step="1000"
+        />
+        <span className="admin-field-hint">
+          Giá thấp nhất cho bữa trưa (VND), ví dụ: 40000 = 40k
+        </span>
+      </label>
+      <label>
+        Giá đến (tùy chọn)
+        <input 
+          type="number"
+          value={priceMax} 
+          onChange={(e) => setPriceMax(e.target.value)} 
+          placeholder="80000"
+          min="0"
+          step="1000"
+        />
+        <span className="admin-field-hint">
+          Giá cao nhất cho bữa trưa (VND), ví dụ: 80000 = 80k
         </span>
       </label>
       <label>
