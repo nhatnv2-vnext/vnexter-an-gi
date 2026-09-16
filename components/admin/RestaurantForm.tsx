@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { slugifyName } from "@/lib/restaurant-admin";
+import { RESTAURANT_TAGS } from "@/lib/restaurant-tags";
 
 type Props = {
   mode: "create" | "edit";
@@ -25,7 +26,14 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
   const [description, setDescription] = useState(initial?.description ?? "");
   const [address, setAddress] = useState(initial?.address ?? "");
   const [imageUrl, setImageUrl] = useState(initial?.imageUrl ?? "");
-  const [tags, setTags] = useState((initial?.tags ?? []).join(", "));
+  const [selectedTags, setSelectedTags] = useState<Set<string>>(
+    new Set(initial?.tags ?? [])
+  );
+  const [customTags, setCustomTags] = useState<string[]>(
+    (initial?.tags ?? []).filter(
+      (tag) => !RESTAURANT_TAGS.some((t) => t.id === tag)
+    )
+  );
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -35,6 +43,18 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
   function onNameChange(value: string) {
     setName(value);
     if (!slugTouched) setSlug(slugifyName(value));
+  }
+
+  function toggleTag(tagId: string) {
+    setSelectedTags((prev) => {
+      const next = new Set(prev);
+      if (next.has(tagId)) {
+        next.delete(tagId);
+      } else {
+        next.add(tagId);
+      }
+      return next;
+    });
   }
 
   async function onUpload(file: File | null) {
@@ -59,13 +79,14 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
     event.preventDefault();
     setSaving(true);
     setError("");
+    const allTags = [...Array.from(selectedTags), ...customTags];
     const payload = {
       name,
       slug,
       description,
       address,
       imageUrl,
-      tags,
+      tags: allTags,
     };
     const res = await fetch(
       mode === "create"
@@ -121,14 +142,35 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
         Địa chỉ
         <input value={address} onChange={(e) => setAddress(e.target.value)} required />
       </label>
-      <label>
-        Tags (cách nhau bởi dấu phẩy)
-        <input
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
-          placeholder="bun, nong, trua"
-        />
-      </label>
+      <fieldset className="admin-tags-fieldset">
+        <legend>Tags</legend>
+        <div className="admin-tags-grid">
+          {RESTAURANT_TAGS.map((tag) => (
+            <label key={tag.id} className="admin-tag-checkbox">
+              <input
+                type="checkbox"
+                checked={selectedTags.has(tag.id)}
+                onChange={() => toggleTag(tag.id)}
+              />
+              <span>{tag.label}</span>
+            </label>
+          ))}
+        </div>
+        {customTags.length > 0 && (
+          <div className="admin-custom-tags">
+            <p className="admin-muted">
+              Tags tùy chỉnh (từ database):
+            </p>
+            <div className="admin-tags-chips">
+              {customTags.map((tag) => (
+                <span key={tag} className="admin-tag-chip">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </fieldset>
       <fieldset className="admin-image-fields">
         <legend>Ảnh quán</legend>
         <p className="admin-muted">
