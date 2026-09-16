@@ -261,6 +261,20 @@ button {
   width: 100%;
 }
 
+.spinner-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+@media (max-width: 768px) {
+  .spinner-filters {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
+
 .section-intro h2,
 .weather-content h2,
 .restaurants-heading h2 {
@@ -281,6 +295,12 @@ button {
   line-height: 1.75;
 }
 
+.cuisine-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
 .cuisine-filters {
   display: flex;
   flex-wrap: wrap;
@@ -288,12 +308,13 @@ button {
 }
 
 .budget-filter {
-  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .budget-filter-label {
   display: block;
-  margin-bottom: 0.75rem;
   color: var(--ink);
   font-size: 0.875rem;
   font-weight: 600;

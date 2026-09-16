@@ -195,19 +195,21 @@ export function SlotSpinner({
         </div>
 
         <div className="spinner-controls">
-          <BudgetFilter onChange={onBudgetChange} />
-          <div className="cuisine-filters">
-            {CUISINE_FILTERS.map((filter) => (
-              <button
-                key={filter.id}
-                type="button"
-                className={`filter-chip${selectedFilter === filter.id ? " is-active" : ""}`}
-                onClick={() => setSelectedFilter(filter.id)}
-                disabled={spinning}
-              >
-                {filter.label}
-              </button>
-            ))}
+          <div className="spinner-filters">
+            <BudgetFilter onChange={onBudgetChange} />
+            <div className="cuisine-filters">
+              {CUISINE_FILTERS.map((filter) => (
+                <button
+                  key={filter.id}
+                  type="button"
+                  className={`filter-chip${selectedFilter === filter.id ? " is-active" : ""}`}
+                  onClick={() => setSelectedFilter(filter.id)}
+                  disabled={spinning}
+                >
+                  {filter.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="slot-machine">
