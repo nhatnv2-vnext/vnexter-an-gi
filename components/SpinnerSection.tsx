@@ -12,9 +12,10 @@ export function SpinnerSection({
   const [budgetMax, setBudgetMax] = useState<number | null>(null);
 
   return (
-    <>
+    <section className="spinner-section section-shell" id="quay-trua">
+      <div className="section-label">01 — Chọn nhanh</div>
       <BudgetFilter onChange={setBudgetMax} />
       <SlotSpinner restaurants={restaurants} budgetMax={budgetMax} />
-    </>
+    </section>
   );
 }

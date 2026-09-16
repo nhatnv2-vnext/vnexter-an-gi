@@ -181,12 +181,7 @@ export function SlotSpinner({
   }
 
   return (
-    <section
-      className="spinner-section section-shell"
-      id="quay-trua"
-      aria-labelledby="spin-heading"
-    >
-      <div className="section-label">01 — Chọn nhanh</div>
+    <div aria-labelledby="spin-heading">
       <div className="spinner-layout">
         <div className="section-intro">
           <h2 id="spin-heading">Trưa nay ăn gì?</h2>
@@ -332,6 +327,6 @@ export function SlotSpinner({
           </div>
         </div>
       )}
-    </section>
+    </div>
   );
 }
