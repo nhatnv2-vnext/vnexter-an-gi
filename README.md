@@ -10,6 +10,7 @@ Stack: Next.js + Prisma + Neon Postgres, deploy trên Vercel.
 2. **Env** — đặt trong `.env` (local) và trên Vercel (xem `.env.example`):
    - `DATABASE_URL`
    - `AUTH_SECRET` (vd. `openssl rand -base64 32`)
+   - `AUTH_URL` (production only — set to your public URL if admin redirects to localhost, e.g. `https://your-domain.com`)
    - `ADMIN_EMAIL` / `ADMIN_PASSWORD` (seed tài khoản admin)
    - `BLOB_READ_WRITE_TOKEN` (Vercel Blob — upload ảnh trong admin)
 3. **DB local** — migrate và seed:
@@ -24,6 +25,8 @@ Stack: Next.js + Prisma + Neon Postgres, deploy trên Vercel.
 5. **Vercel** — import repo, thêm cùng các env trên. Build chạy `prisma generate`, `prisma migrate deploy`, rồi `next build`.
 
 > Nếu `prisma migrate deploy` lỗi advisory lock khi dùng Neon pooler, hãy ưu tiên connection string **direct** (không pooled) cho bước migrate.
+
+> **Production admin fix:** If admin login redirects to `localhost:3000`, set `AUTH_URL` in Vercel env vars to your public URL (e.g. `https://your-domain.vercel.app`). NextAuth v5 auto-detects the URL from request headers, but some hosting environments need explicit configuration.
 
 Sau deploy, seed production một lần nếu cần: `npx prisma db seed` (tạo admin + quán mẫu).
 
