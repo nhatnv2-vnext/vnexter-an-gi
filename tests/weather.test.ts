@@ -63,18 +63,17 @@ describe("buildLunchSuggestion", () => {
     expect(result.preferredTags).toEqual(["pho", "nong", "bun"]);
   });
 
-  it("suggests cool/light dishes on hot weather and ranks correctly", () => {
-    const restaurants = [
+  it("suggests air-conditioned or indoor dining on hot days", () => {
+    const hotRestaurants = [
       { id: "r1", name: "Bún Nóng", tags: ["bun", "nong", "trua"] },
-      { id: "r2", name: "Gỏi Cuốn Mát", tags: ["cuon", "mat", "trua"] },
-      { id: "r3", name: "Sinh Tố", tags: ["do-uong", "mat", "trua"] },
+      { id: "r2", name: "Quán Mát Điều Hòa", tags: ["com", "dieuhoa", "trongnha"] },
     ];
-    const result = buildLunchSuggestion("hot", restaurants);
+    const result = buildLunchSuggestion("hot", hotRestaurants);
     expect(result.suggestionText).toMatch(/nắng nóng/i);
-    expect(result.suggestionText).toMatch(/mát|nhẹ bụng|đồ uống/i);
+    expect(result.suggestionText).toMatch(/điều hòa|trong nhà/i);
     expect(result.suggestedRestaurantId).toBe("r2");
-    expect(result.suggestionText).toContain("Gỏi Cuốn Mát");
-    expect(result.preferredTags).toEqual(["mat", "cuon", "do-uong", "nhe"]);
+    expect(result.suggestionText).toContain("Quán Mát Điều Hòa");
+    expect(result.preferredTags).toEqual(["dieuhoa", "trongnha", "mat"]);
   });
 
   it("suggests hot dishes on cold weather and prefers nong tag", () => {
@@ -123,11 +122,11 @@ describe("buildLunchSuggestion", () => {
   it("picks higher-scored restaurant when multiple match", () => {
     const restaurants = [
       { id: "r1", name: "Mat Only", tags: ["mat", "trua"] },
-      { id: "r2", name: "Mat + Cuon", tags: ["mat", "cuon", "trua"] },
-      { id: "r3", name: "Cuon Only", tags: ["cuon", "trua"] },
+      { id: "r2", name: "Điều Hòa + Trong Nhà", tags: ["dieuhoa", "trongnha", "trua"] },
+      { id: "r3", name: "Trong Nhà Only", tags: ["trongnha", "trua"] },
     ];
     const result = buildLunchSuggestion("hot", restaurants);
     expect(result.suggestedRestaurantId).toBe("r2");
-    expect(result.suggestionText).toContain("Mat + Cuon");
+    expect(result.suggestionText).toContain("Điều Hòa + Trong Nhà");
   });
 });

@@ -83,8 +83,8 @@ const SUGGESTION_COPY: Record<
     preferredTags: ["pho", "nong", "bun"],
   },
   hot: {
-    text: "Trưa nắng nóng — hợp món mát, nhẹ bụng hoặc đồ uống quanh 219 Trung Kính.",
-    preferredTags: ["mat", "cuon", "do-uong", "nhe"],
+    text: "Trưa nắng nóng — nên tìm quán có điều hòa hoặc ngồi trong nhà.",
+    preferredTags: ["dieuhoa", "trongnha", "mat"],
   },
   cold: {
     text: "Trưa se lạnh — hợp món nóng như phở hoặc bún quanh Trung Kính.",

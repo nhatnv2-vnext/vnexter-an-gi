@@ -1,6 +1,12 @@
 /**
  * Canonical restaurant tags catalog
  * Used by admin form and validation
+ * 
+ * Primary tags based on research team input:
+ * nong, pho, bun, com, cuon, mat, nhe, dieuhoa, trongnha
+ * 
+ * Additional tags from weather system / existing data:
+ * trua, cay, do-uong
  */
 export type RestaurantTag = {
   id: string;
@@ -8,17 +14,21 @@ export type RestaurantTag = {
 };
 
 export const RESTAURANT_TAGS: RestaurantTag[] = [
+  // Primary research tags
+  { id: "nong", label: "Nóng" },
   { id: "pho", label: "Phở" },
   { id: "bun", label: "Bún" },
   { id: "com", label: "Cơm" },
-  { id: "nong", label: "Nóng" },
-  { id: "mat", label: "Mát" },
   { id: "cuon", label: "Cuốn" },
-  { id: "do-uong", label: "Đồ uống" },
+  { id: "mat", label: "Mát" },
   { id: "nhe", label: "Nhẹ" },
-  { id: "cay", label: "Cay" },
+  { id: "dieuhoa", label: "Có điều hòa" },
+  { id: "trongnha", label: "Ngồi trong nhà" },
+  
+  // Weather system / existing data tags
   { id: "trua", label: "Trưa" },
-  { id: "chay", label: "Chay" },
+  { id: "cay", label: "Cay" },
+  { id: "do-uong", label: "Đồ uống" },
 ];
 
 /**

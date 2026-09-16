@@ -8,19 +8,41 @@ The admin restaurant form now uses a multi-select checkbox interface for choosin
 
 Location: `lib/restaurant-tags.ts`
 
+Based on research team input, the catalog includes:
+
+### Primary Research Tags
+- **nong** (Nóng) - Hot dishes
+- **pho** (Phở) - Pho noodle soup
+- **bun** (Bún) - Rice vermicelli dishes
+- **com** (Cơm) - Rice dishes
+- **cuon** (Cuốn) - Rolled/wrapped dishes
+- **mat** (Mát) - Cool/refreshing dishes
+- **nhe** (Nhẹ) - Light meals
+- **dieuhoa** (Có điều hòa) - Air-conditioned venue
+- **trongnha** (Ngồi trong nhà) - Indoor seating
+
+### Weather System Tags
+- **trua** (Trưa) - Lunch time
+- **cay** (Cay) - Spicy
+- **do-uong** (Đồ uống) - Beverages
+
 ```typescript
 export const RESTAURANT_TAGS: RestaurantTag[] = [
+  // Primary research tags
+  { id: "nong", label: "Nóng" },
   { id: "pho", label: "Phở" },
   { id: "bun", label: "Bún" },
   { id: "com", label: "Cơm" },
-  { id: "nong", label: "Nóng" },
-  { id: "mat", label: "Mát" },
   { id: "cuon", label: "Cuốn" },
-  { id: "do-uong", label: "Đồ uống" },
+  { id: "mat", label: "Mát" },
   { id: "nhe", label: "Nhẹ" },
-  { id: "cay", label: "Cay" },
+  { id: "dieuhoa", label: "Có điều hòa" },
+  { id: "trongnha", label: "Ngồi trong nhà" },
+  
+  // Weather system / existing data tags
   { id: "trua", label: "Trưa" },
-  { id: "chay", label: "Chay" },
+  { id: "cay", label: "Cay" },
+  { id: "do-uong", label: "Đồ uống" },
 ];
 ```
 
@@ -78,6 +100,16 @@ CSS classes in `app/globals.css`:
 - `.admin-tags-chips` - Chips container
 - `.admin-tag-chip` - Individual custom tag chip
 
+## Weather Integration
+
+The tags integrate with the weather-based lunch suggestion system (`lib/weather.ts`):
+
+- **Rain/Cold days**: Prefers `nong` (hot), `bun` tags
+- **Hot days**: Prefers `dieuhoa` (air-conditioned), `trongnha` (indoor), `mat` (cool) tags
+- **Mild days**: Prefers `trua` (lunch) tag
+
+This allows the system to recommend restaurants with appropriate comfort features based on weather conditions.
+
 ## Benefits
 
 1. **Better UX**: Visual selection instead of typing
@@ -86,3 +118,4 @@ CSS classes in `app/globals.css`:
 4. **Discoverability**: Users see all available tags
 5. **Preservation**: Custom tags not lost during edits
 6. **Backward Compatible**: API still accepts both formats
+7. **Weather-Aware**: New venue comfort tags (dieuhoa, trongnha) integrate with hot weather suggestions
