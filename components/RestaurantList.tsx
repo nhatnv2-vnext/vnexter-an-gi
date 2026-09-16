@@ -57,11 +57,13 @@ export function RestaurantList({
     >
       <div className="section-label">03 — Đi ăn thôi</div>
       <div className="restaurants-heading">
-        <h2 id="restaurants-heading">Quán ăn trưa quanh đây</h2>
-        <p>
-          Những địa chỉ gần 219 Trung Kính, đủ gần để đi ăn trưa mà không cần
-          vội.
-        </p>
+        <div>
+          <h2 id="restaurants-heading">Quán ăn trưa quanh đây</h2>
+          <p>
+            Những địa chỉ gần 219 Trung Kính, đủ gần để đi ăn trưa mà không cần
+            vội.
+          </p>
+        </div>
       </div>
 
       <div className="restaurant-list" aria-live="polite">

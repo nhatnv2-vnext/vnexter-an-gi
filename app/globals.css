@@ -100,10 +100,10 @@ button {
   position: relative;
   display: grid;
   min-height: 90vh;
-  max-width: min(1240px, 100%);
+  max-width: min(1120px, 100%);
   width: 100%;
   margin: 0 auto;
-  padding: 9rem 5vw 5rem;
+  padding: 9rem max(1.5rem, calc((100% - 1120px) / 2)) 5rem;
   align-content: center;
   overflow: hidden;
 }
@@ -231,9 +231,10 @@ button {
 }
 
 .section-shell {
-  width: min(1120px, calc(100% - 3rem));
+  width: 100%;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: clamp(5rem, 10vw, 9rem) 0;
+  padding: clamp(5rem, 10vw, 9rem) max(1.5rem, calc((100% - 1120px) / 2));
   min-width: 0;
 }
 
@@ -741,8 +742,7 @@ button {
 
 .weather-section {
   width: 100%;
-  padding-right: max(1.5rem, calc((100% - 1120px) / 2));
-  padding-left: max(1.5rem, calc((100% - 1120px) / 2));
+  padding: clamp(5rem, 10vw, 9rem) max(1.5rem, calc((100% - 1120px) / 2));
   background: linear-gradient(180deg, rgba(255, 106, 26, 0.08), transparent 70%),
     var(--bg-soft);
   color: var(--ink);
@@ -756,9 +756,9 @@ button {
 
 .weather-layout {
   display: grid;
-  grid-template-columns: minmax(12rem, 0.65fr) minmax(0, 1.35fr);
-  gap: clamp(3rem, 8vw, 8rem);
-  align-items: center;
+  grid-template-columns: minmax(12rem, auto) minmax(0, 1fr);
+  gap: clamp(2.5rem, 6vw, 5rem);
+  align-items: start;
 }
 
 .weather-card {
@@ -916,11 +916,15 @@ button {
 }
 
 .restaurants-heading {
-  display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 3rem;
-  align-items: end;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
   margin-bottom: 4rem;
+}
+
+.restaurants-heading > div {
+  flex: 1;
 }
 
 .restaurant-list {
@@ -1072,9 +1076,10 @@ button {
 }
 
 .detail-hero {
-  width: min(1240px, calc(100% - 3rem));
+  width: 100%;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: 2rem 0 clamp(5rem, 8vw, 8rem);
+  padding: 2rem max(1.5rem, calc((100% - 1120px) / 2)) clamp(5rem, 8vw, 8rem);
 }
 
 .detail-nav {
@@ -1194,6 +1199,9 @@ button {
 }
 
 .detail-content {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
   padding: clamp(5rem, 9vw, 8rem) max(1.5rem, calc((100% - 1120px) / 2));
   background: var(--bg-soft);
   color: var(--ink);
@@ -1597,8 +1605,9 @@ button {
   }
 
   .section-shell {
-    width: min(100% - 2.5rem, 1120px);
-    padding: 3.5rem 0;
+    width: 100%;
+    max-width: 1120px;
+    padding: 3.5rem 1.25rem;
   }
 
   .section-intro h2,
@@ -1682,8 +1691,7 @@ button {
 
   .weather-section {
     width: 100%;
-    padding-right: 1.25rem;
-    padding-left: 1.25rem;
+    padding: 3.5rem 1.25rem;
   }
 
   .weather-layout {
@@ -1913,7 +1921,10 @@ button {
   }
 
   .section-shell {
-    width: min(100% - 2rem, 1120px);
+    width: 100%;
+    max-width: 1120px;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 
   .hero-kicker {
