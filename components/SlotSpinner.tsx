@@ -19,9 +19,17 @@ type CuisineFilter = {
   tags: string[];
 };
 
-const ITEM_WIDTH = 148;
+const ITEM_WIDTH_MOBILE = 148;
+const ITEM_WIDTH_DESKTOP = 200;
 const REEL_LOOPS = 28;
 const SPIN_MS = 4800;
+
+function getItemWidth(): number {
+  if (typeof window === "undefined") return ITEM_WIDTH_MOBILE;
+  return window.matchMedia("(min-width: 768px)").matches
+    ? ITEM_WIDTH_DESKTOP
+    : ITEM_WIDTH_MOBILE;
+}
 
 const CUISINE_FILTERS: CuisineFilter[] = [
   { id: "mon-nuoc", label: "Món nước", tags: ["pho", "bun", "nong"] },
@@ -122,6 +130,7 @@ export function SlotSpinner({
 
     const pick = filteredRestaurants[Math.floor(Math.random() * filteredRestaurants.length)];
     const viewportWidth = viewportRef.current?.clientWidth ?? 360;
+    const itemWidth = getItemWidth();
 
     const minIndex = Math.floor(reel.length * 0.72);
     let winnerIndex = -1;
@@ -140,9 +149,9 @@ export function SlotSpinner({
       }
     }
 
-    const jitter = (Math.random() - 0.5) * (ITEM_WIDTH * 0.45);
+    const jitter = (Math.random() - 0.5) * (itemWidth * 0.45);
     const targetOffset =
-      winnerIndex * ITEM_WIDTH + ITEM_WIDTH / 2 - viewportWidth / 2 + jitter;
+      winnerIndex * itemWidth + itemWidth / 2 - viewportWidth / 2 + jitter;
 
     setWinner(null);
     setLandedIndex(null);
@@ -228,14 +237,13 @@ export function SlotSpinner({
                       landedIndex === index ? " is-winner" : ""
                     }`}
                     key={`${item.id}-${index}`}
-                    style={{ width: ITEM_WIDTH }}
                   >
                     <div className="case-thumb">
                       <Image
                         src={item.imageUrl}
                         alt=""
                         fill
-                        sizes="120px"
+                        sizes="(min-width: 768px) 112px, 72px"
                         className="case-thumb-image"
                       />
                     </div>
