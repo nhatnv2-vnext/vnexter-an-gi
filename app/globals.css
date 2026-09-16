@@ -2124,3 +2124,29 @@ button {
   cursor: pointer;
   font-weight: 700;
 }
+
+.admin-tags-select {
+  min-height: 12rem;
+  padding: 0.5rem;
+  border: 1px solid rgba(26, 28, 24, 0.18);
+  background: #fffef9;
+  font: inherit;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.admin-tags-select option {
+  padding: 0.4rem 0.5rem;
+  cursor: pointer;
+}
+
+.admin-tags-select option:checked {
+  background: linear-gradient(#e8e6dc, #e8e6dc);
+  font-weight: 600;
+}
+
+.admin-custom-tags-note {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(26, 28, 24, 0.08);
+}

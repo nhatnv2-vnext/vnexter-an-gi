@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { slugifyName } from "@/lib/restaurant-admin";
+import { RESTAURANT_TAGS } from "@/lib/restaurant-tags";
 
 type Props = {
   mode: "create" | "edit";
@@ -25,7 +26,14 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
   const [description, setDescription] = useState(initial?.description ?? "");
   const [address, setAddress] = useState(initial?.address ?? "");
   const [imageUrl, setImageUrl] = useState(initial?.imageUrl ?? "");
-  const [tags, setTags] = useState((initial?.tags ?? []).join(", "));
+  const [selectedTags, setSelectedTags] = useState<Set<string>>(
+    new Set(initial?.tags ?? [])
+  );
+  const [customTags, setCustomTags] = useState<string[]>(
+    (initial?.tags ?? []).filter(
+      (tag) => !RESTAURANT_TAGS.some((t) => t.id === tag)
+    )
+  );
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -35,6 +43,12 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
   function onNameChange(value: string) {
     setName(value);
     if (!slugTouched) setSlug(slugifyName(value));
+  }
+
+  function onTagsChange(event: React.ChangeEvent<HTMLSelectElement>) {
+    const options = Array.from(event.target.selectedOptions);
+    const selected = options.map((opt) => opt.value);
+    setSelectedTags(new Set(selected));
   }
 
   async function onUpload(file: File | null) {
@@ -59,13 +73,14 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
     event.preventDefault();
     setSaving(true);
     setError("");
+    const allTags = [...Array.from(selectedTags), ...customTags];
     const payload = {
       name,
       slug,
       description,
       address,
       imageUrl,
-      tags,
+      tags: allTags,
     };
     const res = await fetch(
       mode === "create"
@@ -122,12 +137,30 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
         <input value={address} onChange={(e) => setAddress(e.target.value)} required />
       </label>
       <label>
-        Tags (cách nhau bởi dấu phẩy)
-        <input
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
-          placeholder="bun, nong, trua"
-        />
+        Tags
+        <select
+          multiple
+          value={Array.from(selectedTags)}
+          onChange={onTagsChange}
+          className="admin-tags-select"
+          size={8}
+        >
+          {RESTAURANT_TAGS.map((tag) => (
+            <option key={tag.id} value={tag.id}>
+              {tag.label}
+            </option>
+          ))}
+        </select>
+        <span className="admin-field-hint">
+          Giữ Ctrl (Windows) hoặc Cmd (Mac) để chọn nhiều tags. Các giá trị lưu vào database là slug (pho, bun, dieuhoa, v.v.).
+        </span>
+        {customTags.length > 0 && (
+          <div className="admin-custom-tags-note">
+            <span className="admin-muted">
+              Tags tùy chỉnh từ database: {customTags.join(", ")}
+            </span>
+          </div>
+        )}
       </label>
       <fieldset className="admin-image-fields">
         <legend>Ảnh quán</legend>
