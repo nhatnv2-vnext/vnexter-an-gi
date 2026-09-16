@@ -135,7 +135,7 @@ export function SlotSpinner({
           <h2 id="spin-heading">Trưa nay ăn gì?</h2>
           <p>
             Chạm Quay để chọn quán trưa quanh Trung Kính. Kim giữa sẽ chốt kết
-            quả. Thời tiết chỉ gợi ý riêng, không xen vào vòng quay.
+            quả.
           </p>
         </div>
 
