@@ -35,7 +35,7 @@ describe("restaurant detail UI", () => {
   });
 
   it("loads a restaurant and visitor review in a dynamic detail page", () => {
-    const page = projectFile("app/restaurants/[id]/page.tsx");
+    const page = projectFile("app/restaurants/[slug]/page.tsx");
 
     expect(page).toContain('from "next/image"');
     expect(page).toContain("await params");

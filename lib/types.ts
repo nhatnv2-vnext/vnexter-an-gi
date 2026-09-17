@@ -10,5 +10,5 @@ export type WeatherSuggestionResult = {
   condition: WeatherCondition;
   tempC: number;
   suggestionText: string;
-  suggestedRestaurantId?: string;
+  suggestedRestaurantSlug?: string;
 };

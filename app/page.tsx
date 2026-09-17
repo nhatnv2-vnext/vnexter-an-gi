@@ -61,7 +61,7 @@ export default async function Home() {
   });
 
   const weather = await getLunchWeather(
-    restaurants.map(({ id, name, tags }) => ({ id, name, tags })),
+    restaurants.map(({ id, slug, name, tags }) => ({ id, slug, name, tags })),
   );
 
   return (

@@ -55,8 +55,8 @@ export default async function AdminRestaurantsPage() {
                 <td>{r.tags.join(", ") || "—"}</td>
                 <td>{r._count.reviews}</td>
                 <td className="admin-row-actions">
-                  <Link href={`/admin/restaurants/${r.id}`}>Sửa</Link>
-                  <DeleteRestaurantButton id={r.id} name={r.name} />
+                  <Link href={`/admin/restaurants/${r.slug}`}>Sửa</Link>
+                  <DeleteRestaurantButton id={r.slug} name={r.name} />
                 </td>
               </tr>
             ))}

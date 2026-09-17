@@ -5,6 +5,7 @@ import { formatHoursLabel, isOpenNow } from "@/lib/restaurant-hours";
 
 export type RestaurantListItem = {
   id: string;
+  slug: string;
   name: string;
   description: string;
   address: string;
@@ -63,7 +64,7 @@ export function RestaurantCard({
       </span>
       <Link
         className="restaurant-image"
-        href={`/restaurants/${restaurant.id}`}
+        href={`/restaurants/${restaurant.slug}`}
         aria-label={`Xem ${restaurant.name}`}
       >
         <Image
@@ -97,7 +98,7 @@ export function RestaurantCard({
           </div>
         </div>
         <h3>
-          <Link href={`/restaurants/${restaurant.id}`}>{restaurant.name}</Link>
+          <Link href={`/restaurants/${restaurant.slug}`}>{restaurant.name}</Link>
         </h3>
         <p>{restaurant.description}</p>
         <AddressMapLink
@@ -105,7 +106,7 @@ export function RestaurantCard({
           address={restaurant.address}
         />
       </div>
-      <Link className="restaurant-arrow" href={`/restaurants/${restaurant.id}`}>
+      <Link className="restaurant-arrow" href={`/restaurants/${restaurant.slug}`}>
         <span className="sr-only">Xem chi tiết {restaurant.name}</span>
         <span aria-hidden="true">↗</span>
       </Link>
