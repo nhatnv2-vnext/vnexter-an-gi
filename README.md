@@ -35,3 +35,7 @@ Sau deploy, seed production một lần nếu cần: `npx prisma db seed` (tạo
 - CRUD quán ăn (tên, slug, mô tả, địa chỉ, tags, ảnh)
 - Upload ảnh qua Vercel Blob
 - Xem / xóa review spam
+
+## Google Search Console
+
+Google Search Console verification files (e.g. `google*.html`) must be placed in the `public/` directory. Next.js automatically serves files from `public/` at the site root, ensuring they survive Vercel deploys and remain accessible for verification.
