@@ -3,13 +3,18 @@ import { notFound } from "next/navigation";
 import { RestaurantForm } from "@/components/admin/RestaurantForm";
 import { prisma } from "@/lib/prisma";
 
-type Props = { params: Promise<{ id: string }> };
+type Props = { params: Promise<{ slug: string }> };
 
 export const dynamic = "force-dynamic";
 
+function looksLikeCuid(value: string): boolean {
+  return /^c[a-z0-9]{24}$/i.test(value);
+}
+
 export default async function EditRestaurantPage({ params }: Props) {
-  const { id } = await params;
-  const restaurant = await prisma.restaurant.findUnique({ where: { id } });
+  const { slug } = await params;
+  const where = looksLikeCuid(slug) ? { id: slug } : { slug };
+  const restaurant = await prisma.restaurant.findUnique({ where });
   if (!restaurant) notFound();
 
   return (

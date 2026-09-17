@@ -4,7 +4,11 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { validateRestaurantInput } from "@/lib/restaurant-admin";
 
-type Params = { params: Promise<{ id: string }> };
+type Params = { params: Promise<{ slug: string }> };
+
+function looksLikeCuid(value: string): boolean {
+  return /^c[a-z0-9]{24}$/i.test(value);
+}
 
 export async function PATCH(req: NextRequest, { params }: Params) {
   const session = await requireAdmin();
@@ -12,7 +16,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { id } = await params;
+  const { slug } = await params;
+  const where = looksLikeCuid(slug) ? { id: slug } : { slug };
   const body = await req.json().catch(() => null);
   const validated = validateRestaurantInput(body);
   if (!validated.ok) {
@@ -21,7 +26,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
   try {
     const restaurant = await prisma.restaurant.update({
-      where: { id },
+      where,
       data: validated.data,
     });
     return NextResponse.json({ restaurant });
@@ -44,9 +49,10 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { id } = await params;
+  const { slug } = await params;
+  const where = looksLikeCuid(slug) ? { id: slug } : { slug };
   try {
-    await prisma.restaurant.delete({ where: { id } });
+    await prisma.restaurant.delete({ where });
     return NextResponse.json({ ok: true });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2025") {

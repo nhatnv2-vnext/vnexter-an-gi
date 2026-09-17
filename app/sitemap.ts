@@ -11,7 +11,7 @@ export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const restaurants = await prisma.restaurant.findMany({
-    select: { id: true, createdAt: true },
+    select: { slug: true, createdAt: true },
     orderBy: { createdAt: "asc" },
   });
 
@@ -23,7 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     ...restaurants.map((restaurant) => ({
-      url: `${siteUrl}/restaurants/${restaurant.id}`,
+      url: `${siteUrl}/restaurants/${restaurant.slug}`,
       lastModified: restaurant.createdAt,
       changeFrequency: "daily" as const,
       priority: 0.8,

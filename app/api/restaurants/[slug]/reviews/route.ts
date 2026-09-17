@@ -4,11 +4,16 @@ import { prisma } from "@/lib/prisma";
 import { validateCreateReview } from "@/lib/review-validation";
 import { ensureVisitorId, VISITOR_COOKIE } from "@/lib/visitor";
 
-type Params = { params: Promise<{ id: string }> };
+type Params = { params: Promise<{ slug: string }> };
+
+function looksLikeCuid(value: string): boolean {
+  return /^c[a-z0-9]{24}$/i.test(value);
+}
 
 export async function POST(req: NextRequest, { params }: Params) {
-  const { id } = await params;
-  const restaurant = await prisma.restaurant.findUnique({ where: { id } });
+  const { slug } = await params;
+  const where = looksLikeCuid(slug) ? { id: slug } : { slug };
+  const restaurant = await prisma.restaurant.findUnique({ where });
   if (!restaurant) {
     return NextResponse.json({ error: "Không tìm thấy quán" }, { status: 404 });
   }
@@ -25,7 +30,7 @@ export async function POST(req: NextRequest, { params }: Params) {
   try {
     const review = await prisma.review.create({
       data: {
-        restaurantId: id,
+        restaurantId: restaurant.id,
         visitorId,
         rating: validated.data.rating,
         comment: validated.data.comment,

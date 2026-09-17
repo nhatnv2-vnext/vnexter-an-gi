@@ -117,10 +117,10 @@ function scoreRestaurant(
 
 export function buildLunchSuggestion(
   condition: WeatherCondition,
-  restaurants: { id: string; name: string; tags: string[] }[],
+  restaurants: { id: string; slug: string; name: string; tags: string[] }[],
 ): {
   suggestionText: string;
-  suggestedRestaurantId?: string;
+  suggestedRestaurantSlug?: string;
   preferredTags: string[];
 } {
   const { text, preferredTags } = SUGGESTION_COPY[condition];
@@ -140,14 +140,14 @@ export function buildLunchSuggestion(
     return {
       suggestionText,
       preferredTags,
-      suggestedRestaurantId: bestMatch.id,
+      suggestedRestaurantSlug: bestMatch.slug,
     };
   }
 
   return {
     suggestionText: text,
     preferredTags,
-    suggestedRestaurantId: undefined,
+    suggestedRestaurantSlug: undefined,
   };
 }
 
@@ -188,12 +188,12 @@ export type LunchWeatherPayload = {
   tempC: number | null;
   weatherCode: number | null;
   suggestionText: string;
-  suggestedRestaurantId?: string;
+  suggestedRestaurantSlug?: string;
   degraded?: boolean;
 };
 
 export async function getLunchWeather(
-  restaurants: { id: string; name: string; tags: string[] }[],
+  restaurants: { id: string; slug: string; name: string; tags: string[] }[],
 ): Promise<LunchWeatherPayload> {
   try {
     const { tempC, weatherCode } = await fetchOpenMeteoCurrent();
@@ -207,7 +207,7 @@ export async function getLunchWeather(
       tempC,
       weatherCode,
       suggestionText: suggestion.suggestionText,
-      suggestedRestaurantId: suggestion.suggestedRestaurantId,
+      suggestedRestaurantSlug: suggestion.suggestedRestaurantSlug,
     };
   } catch {
     const fallbackRestaurant = restaurants.find(
@@ -225,7 +225,7 @@ export async function getLunchWeather(
       tempC: null,
       weatherCode: null,
       suggestionText,
-      suggestedRestaurantId: fallbackRestaurant?.id,
+      suggestedRestaurantSlug: fallbackRestaurant?.slug,
       degraded: true,
     };
   }

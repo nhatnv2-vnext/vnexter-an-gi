@@ -12,6 +12,7 @@ import {
 
 export type RestaurantSummary = {
   id: string;
+  slug: string;
   name: string;
   imageUrl: string;
   tags: string[];
@@ -264,7 +265,7 @@ export function SlotSpinner({
                 </p>
               )}
               {winner && !spinning && !reveal && (
-                <Link className="result-link" href={`/restaurants/${winner.id}`}>
+                <Link className="result-link" href={`/restaurants/${winner.slug}`}>
                   Xem quán vừa chọn
                 </Link>
               )}
@@ -306,7 +307,7 @@ export function SlotSpinner({
             <div className="case-reveal-actions">
               <Link
                 className="case-reveal-primary"
-                href={`/restaurants/${winner.id}`}
+                href={`/restaurants/${winner.slug}`}
               >
                 Xem chi tiết quán
               </Link>

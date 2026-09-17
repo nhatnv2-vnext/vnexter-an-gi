@@ -79,8 +79,8 @@ export function WeatherSuggestion({
                 Gợi ý dự phòng khi dữ liệu thời tiết gián đoạn.
               </p>
             )}
-            {weather.suggestedRestaurantId && (
-              <Link href={`/restaurants/${weather.suggestedRestaurantId}`}>
+            {weather.suggestedRestaurantSlug && (
+              <Link href={`/restaurants/${weather.suggestedRestaurantSlug}`}>
                 Xem quán hợp thời tiết <span aria-hidden="true">→</span>
               </Link>
             )}

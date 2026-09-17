@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { AddressMapLink } from "@/components/AddressMapLink";
 import { ReviewForm } from "@/components/ReviewForm";
 import { ReviewList } from "@/components/ReviewList";
@@ -13,16 +13,26 @@ import { getTagLabel } from "@/lib/restaurant-tags";
 import { VISITOR_COOKIE } from "@/lib/visitor";
 
 type RestaurantPageProps = {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 };
+
+function looksLikeCuid(value: string): boolean {
+  return /^c[a-z0-9]{24}$/i.test(value);
+}
 
 export async function generateMetadata({
   params,
 }: RestaurantPageProps): Promise<Metadata> {
-  const { id } = await params;
+  const { slug } = await params;
+  
+  const where = looksLikeCuid(slug) 
+    ? { id: slug }
+    : { slug };
+  
   const restaurant = await prisma.restaurant.findUnique({
-    where: { id },
+    where,
     select: {
+      slug: true,
       name: true,
       description: true,
       imageUrl: true,
@@ -43,12 +53,12 @@ export async function generateMetadata({
     title: title ? { absolute: title } : restaurant.name,
     description,
     alternates: {
-      canonical: `/restaurants/${id}`,
+      canonical: `/restaurants/${restaurant.slug}`,
     },
     openGraph: {
       type: "website",
       locale: "vi_VN",
-      url: `/restaurants/${id}`,
+      url: `/restaurants/${restaurant.slug}`,
       siteName: "Vnexter ăn gì",
       title: title || `${restaurant.name} · Vnexter ăn gì`,
       description,
@@ -64,14 +74,22 @@ export async function generateMetadata({
 }
 
 export default async function RestaurantPage({ params }: RestaurantPageProps) {
-  const { id } = await params;
+  const { slug } = await params;
   const visitorId = (await cookies()).get(VISITOR_COOKIE)?.value;
+  
+  const isId = looksLikeCuid(slug);
+  const where = isId ? { id: slug } : { slug };
+  
   const restaurant = await prisma.restaurant.findUnique({
-    where: { id },
+    where,
     include: { reviews: { orderBy: { createdAt: "desc" } } },
   });
 
   if (!restaurant) notFound();
+  
+  if (isId && restaurant.slug !== slug) {
+    redirect(`/restaurants/${restaurant.slug}`, "replace");
+  }
 
   const reviewCount = restaurant.reviews.length;
   const avgRating =

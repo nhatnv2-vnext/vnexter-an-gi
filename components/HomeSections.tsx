@@ -43,8 +43,9 @@ export function HomeSections({
       <section className="spinner-section section-shell" id="quay-trua">
         <SlotSpinner
           restaurants={filtered.map(
-            ({ id, name, imageUrl, tags, priceMin, priceMax }) => ({
+            ({ id, slug, name, imageUrl, tags, priceMin, priceMax }) => ({
               id,
+              slug,
               name,
               imageUrl,
               tags,

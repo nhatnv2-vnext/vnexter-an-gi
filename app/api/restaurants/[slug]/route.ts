@@ -2,14 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { VISITOR_COOKIE } from "@/lib/visitor";
 
-type Params = { params: Promise<{ id: string }> };
+type Params = { params: Promise<{ slug: string }> };
+
+function looksLikeCuid(value: string): boolean {
+  return /^c[a-z0-9]{24}$/i.test(value);
+}
 
 export async function GET(req: NextRequest, { params }: Params) {
-  const { id } = await params;
+  const { slug } = await params;
   const visitorId = req.cookies.get(VISITOR_COOKIE)?.value;
 
+  const where = looksLikeCuid(slug) ? { id: slug } : { slug };
+
   const restaurant = await prisma.restaurant.findUnique({
-    where: { id },
+    where,
     include: {
       reviews: { orderBy: { createdAt: "desc" } },
     },
