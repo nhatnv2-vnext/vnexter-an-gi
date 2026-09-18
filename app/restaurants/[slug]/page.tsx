@@ -43,14 +43,15 @@ export async function generateMetadata({
   });
   if (!restaurant) return { title: "Không tìm thấy quán" };
 
-  const title = restaurant.metaTitle?.trim();
+  const customTitle = restaurant.metaTitle?.trim();
+  const title = customTitle || `${restaurant.name} | Vnexter ăn gì`;
   const description = (
     restaurant.metaDescription?.trim() || restaurant.description
   ).slice(0, 180);
   const image = restaurant.metaImageUrl?.trim() || restaurant.imageUrl;
 
   return {
-    title: title ? { absolute: title } : restaurant.name,
+    title: { absolute: title },
     description,
     alternates: {
       canonical: `/restaurants/${restaurant.slug}`,
@@ -60,13 +61,13 @@ export async function generateMetadata({
       locale: "vi_VN",
       url: `/restaurants/${restaurant.slug}`,
       siteName: "Vnexter ăn gì",
-      title: title || `${restaurant.name} · Vnexter ăn gì`,
+      title: customTitle || `${restaurant.name} · Vnexter ăn gì`,
       description,
       images: image ? [{ url: image }] : undefined,
     },
     twitter: {
       card: "summary_large_image",
-      title: title || `${restaurant.name} · Vnexter ăn gì`,
+      title: customTitle || `${restaurant.name} · Vnexter ăn gì`,
       description,
       images: image ? [image] : undefined,
     },
@@ -116,8 +117,49 @@ export default async function RestaurantPage({ params }: RestaurantPageProps) {
   const hoursLabel = formatHoursLabel(restaurant.openTime, restaurant.closeTime);
   const openStatus = isOpenNow(restaurant.openTime, restaurant.closeTime);
 
+  const siteUrl =
+    process.env.AUTH_URL?.replace(/\/$/, "") ||
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : "https://vnexter-an-gi.vercel.app");
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    name: restaurant.name,
+    image: restaurant.imageUrl,
+    description: restaurant.description,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: restaurant.address,
+      addressLocality: "Hà Nội",
+      addressCountry: "VN",
+    },
+    url: `${siteUrl}/restaurants/${restaurant.slug}`,
+    servesCuisine: restaurant.tags.map((tag) => getTagLabel(tag)).join(", "),
+    ...(reviewCount > 0 && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: avgRating.toString(),
+        bestRating: "5",
+        worstRating: "1",
+        ratingCount: reviewCount.toString(),
+      },
+    }),
+    ...(restaurant.priceMin && {
+      priceRange: restaurant.priceMax
+        ? `${restaurant.priceMin} - ${restaurant.priceMax} VND`
+        : `${restaurant.priceMin}+ VND`,
+    }),
+  };
+
   return (
-    <main className="detail-page">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <main className="detail-page">
       <header className="detail-hero">
         <div className="detail-nav">
           <Link href="/">
@@ -206,5 +248,6 @@ export default async function RestaurantPage({ params }: RestaurantPageProps) {
         />
       </div>
     </main>
+    </>
   );
 }
