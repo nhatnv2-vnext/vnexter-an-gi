@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { RestaurantList } from "@/components/RestaurantList";
 import type { RestaurantListItem } from "@/components/RestaurantCard";
 import { SlotSpinner } from "@/components/SlotSpinner";
@@ -26,6 +26,7 @@ export function HomeSections({
   weather: LunchWeatherPayload;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const budgetMax = useMemo(() => {
@@ -77,10 +78,10 @@ export function HomeSections({
       
       params.delete("page");
       
-      const newUrl = params.toString() ? `/?${params.toString()}` : "/";
+      const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
       router.push(newUrl, { scroll: false });
     },
-    [router, searchParams]
+    [router, pathname, searchParams]
   );
 
   const filtered = useMemo(
