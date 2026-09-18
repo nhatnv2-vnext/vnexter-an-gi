@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useMemo, useCallback, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   RestaurantCard,
   type RestaurantListItem,
@@ -35,6 +35,7 @@ export function RestaurantList({
   totalUnfiltered?: number;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const pageSize = usePageSize();
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -67,11 +68,11 @@ export function RestaurantList({
         params.set("page", (target + 1).toString());
       }
       
-      const newUrl = params.toString() ? `/?${params.toString()}` : "/";
+      const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
       router.push(newUrl, { scroll: false });
       headingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     },
-    [router, searchParams, totalPages]
+    [router, pathname, searchParams, totalPages]
   );
 
   return (
