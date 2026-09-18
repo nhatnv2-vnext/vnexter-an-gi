@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { prisma } from "@/lib/prisma";
 import { getLunchWeather } from "@/lib/weather";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
@@ -41,7 +42,7 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const rows = await prisma.restaurant.findMany({
-    orderBy: { createdAt: "asc" },
+    orderBy: { updatedAt: "desc" },
     include: { reviews: { select: { rating: true } } },
   });
 
