@@ -46,13 +46,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "vi_VN",
-    url: "/",
+    url: siteUrl,
     siteName: siteTitle,
     title: siteTitle,
     description: siteDescription,
     images: [
       {
-        url: "/og.png",
+        url: `${siteUrl}/og.png`,
         width: 1200,
         height: 630,
         alt: "Vnexter ăn gì — chọn quán trưa quanh 219 Trung Kính",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: siteTitle,
     description: siteDescription,
-    images: ["/og.png"],
+    images: [`${siteUrl}/og.png`],
   },
   robots: {
     index: true,
@@ -73,6 +73,9 @@ export const metadata: Metadata = {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
       { url: "/favicon.webp", type: "image/webp" },
+    ],
+    apple: [
+      { url: "/favicon.webp", sizes: "180x180", type: "image/webp" },
     ],
   },
 };
