@@ -30,6 +30,7 @@ model Restaurant {
   metaDescription String?
   metaImageUrl    String?
   createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
   reviews         Review[]
 }
 

@@ -11,7 +11,7 @@ export async function GET() {
   }
 
   const restaurants = await prisma.restaurant.findMany({
-    orderBy: { createdAt: "asc" },
+    orderBy: { updatedAt: "desc" },
     include: { _count: { select: { reviews: true } } },
   });
 

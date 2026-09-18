@@ -41,7 +41,7 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const rows = await prisma.restaurant.findMany({
-    orderBy: { createdAt: "asc" },
+    orderBy: { updatedAt: "desc" },
     include: { reviews: { select: { rating: true } } },
   });
 
