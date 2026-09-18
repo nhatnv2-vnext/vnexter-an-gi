@@ -7,7 +7,7 @@ import {
   type RestaurantListItem,
 } from "@/components/RestaurantCard";
 
-const MOBILE_PAGE_SIZE = 4;
+const MOBILE_PAGE_SIZE = 10;
 const DESKTOP_PAGE_SIZE = 10;
 const MOBILE_MQ = "(max-width: 760px)";
 
