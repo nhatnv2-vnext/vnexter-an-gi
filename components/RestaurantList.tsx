@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useMemo, useCallback, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   RestaurantCard,
   type RestaurantListItem,
@@ -33,11 +34,18 @@ export function RestaurantList({
   restaurants: RestaurantListItem[];
   totalUnfiltered?: number;
 }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const pageSize = usePageSize();
-  const [page, setPage] = useState(0);
   const headingRef = useRef<HTMLHeadingElement>(null);
+  
+  const page = useMemo(() => {
+    const pageParam = searchParams.get("page");
+    return pageParam ? parseInt(pageParam, 10) - 1 : 0;
+  }, [searchParams]);
+
   const totalPages = Math.max(1, Math.ceil(restaurants.length / pageSize));
-  const safePage = Math.min(page, totalPages - 1);
+  const safePage = Math.max(0, Math.min(page, totalPages - 1));
   const start = safePage * pageSize;
   const pageItems = restaurants.slice(start, start + pageSize);
 
@@ -48,15 +56,23 @@ export function RestaurantList({
     typeof totalUnfiltered === "number" &&
     totalUnfiltered > restaurants.length;
 
-  useEffect(() => {
-    setPage(0);
-  }, [pageSize, restaurants]);
-
-  function goTo(next: number) {
-    const target = Math.max(0, Math.min(totalPages - 1, next));
-    setPage(target);
-    headingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+  const goTo = useCallback(
+    (next: number) => {
+      const target = Math.max(0, Math.min(totalPages - 1, next));
+      const params = new URLSearchParams(searchParams.toString());
+      
+      if (target === 0) {
+        params.delete("page");
+      } else {
+        params.set("page", (target + 1).toString());
+      }
+      
+      const newUrl = params.toString() ? `/?${params.toString()}` : "/";
+      router.push(newUrl, { scroll: false });
+      headingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    },
+    [router, searchParams, totalPages]
+  );
 
   return (
     <section

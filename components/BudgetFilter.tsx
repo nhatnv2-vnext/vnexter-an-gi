@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 type BudgetOption = {
   id: string;
   label: string;

@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { RestaurantList } from "@/components/RestaurantList";
 import type { RestaurantListItem } from "@/components/RestaurantCard";
 import { SlotSpinner } from "@/components/SlotSpinner";
@@ -24,9 +25,63 @@ export function HomeSections({
   restaurants: HomeRestaurant[];
   weather: LunchWeatherPayload;
 }) {
-  const [budgetMax, setBudgetMax] = useState<number | null>(null);
-  const [cuisineId, setCuisineId] = useState("all");
-  const [openNowOnly, setOpenNowOnly] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const budgetMax = useMemo(() => {
+    const budget = searchParams.get("budget");
+    return budget ? parseInt(budget, 10) : null;
+  }, [searchParams]);
+
+  const cuisineId = useMemo(
+    () => searchParams.get("cuisine") || "all",
+    [searchParams]
+  );
+
+  const openNowOnly = useMemo(
+    () => searchParams.get("open") === "true",
+    [searchParams]
+  );
+
+  const updateFilters = useCallback(
+    (updates: {
+      budget?: number | null;
+      cuisine?: string;
+      open?: boolean;
+    }) => {
+      const params = new URLSearchParams(searchParams.toString());
+      
+      if (updates.budget !== undefined) {
+        if (updates.budget) {
+          params.set("budget", updates.budget.toString());
+        } else {
+          params.delete("budget");
+        }
+      }
+      
+      if (updates.cuisine !== undefined) {
+        if (updates.cuisine && updates.cuisine !== "all") {
+          params.set("cuisine", updates.cuisine);
+        } else {
+          params.delete("cuisine");
+        }
+      }
+      
+      if (updates.open !== undefined) {
+        if (updates.open) {
+          params.set("open", "true");
+        } else {
+          params.delete("open");
+        }
+      }
+      
+      params.delete("page");
+      
+      const newUrl = params.toString() ? `/?${params.toString()}` : "/";
+      router.push(newUrl, { scroll: false });
+    },
+    [router, searchParams]
+  );
 
   const filtered = useMemo(
     () =>
@@ -56,7 +111,10 @@ export function HomeSections({
           totalAvailable={restaurants.length}
           budgetSlot={
             <div className="spinner-filters">
-              <BudgetFilter value={budgetMax} onChange={setBudgetMax} />
+              <BudgetFilter 
+                value={budgetMax} 
+                onChange={(budget) => updateFilters({ budget })} 
+              />
               <div className="cuisine-filter-group">
                 <label className="cuisine-filter-label">Loại đồ ăn</label>
                 <div className="cuisine-filters">
@@ -67,7 +125,7 @@ export function HomeSections({
                       className={`filter-chip${
                         cuisineId === filter.id ? " is-active" : ""
                       }`}
-                      onClick={() => setCuisineId(filter.id)}
+                      onClick={() => updateFilters({ cuisine: filter.id })}
                     >
                       {filter.label}
                     </button>
@@ -78,7 +136,7 @@ export function HomeSections({
                 <button
                   type="button"
                   className={`filter-chip${openNowOnly ? " is-active" : ""}`}
-                  onClick={() => setOpenNowOnly((v) => !v)}
+                  onClick={() => updateFilters({ open: !openNowOnly })}
                   aria-pressed={openNowOnly}
                 >
                   Đang mở
