@@ -1,3 +1,5 @@
+import { isBrandFirstTitle } from "@/lib/restaurant-seo";
+
 export type RestaurantInput = {
   name: string;
   slug: string;
@@ -99,6 +101,12 @@ export function validateRestaurantInput(
 
   if (metaTitle && metaTitle.length > 70) {
     return { ok: false, error: "Meta title tối đa 70 ký tự" };
+  }
+  if (metaTitle && isBrandFirstTitle(metaTitle)) {
+    return {
+      ok: false,
+      error: "Meta title không được bắt đầu bằng tên thương hiệu — đặt tên quán trước",
+    };
   }
   if (metaDescription && metaDescription.length > 180) {
     return { ok: false, error: "Meta description tối đa 180 ký tự" };

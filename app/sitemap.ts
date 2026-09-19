@@ -1,11 +1,8 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
+import { getSiteUrl } from "@/lib/site";
 
-const siteUrl =
-  process.env.AUTH_URL?.replace(/\/$/, "") ||
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : "https://vnexter-an-gi.vercel.app");
+const siteUrl = getSiteUrl();
 
 export const revalidate = 3600;
 export const dynamic = "force-dynamic";
@@ -25,15 +22,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     const restaurants = await prisma.restaurant.findMany({
-      select: { slug: true, createdAt: true },
+      select: { slug: true, updatedAt: true },
       orderBy: { createdAt: "asc" },
     });
 
     const restaurantEntries = restaurants.map((restaurant) => ({
       url: `${siteUrl}/restaurants/${restaurant.slug}`,
-      lastModified: restaurant.createdAt,
-      changeFrequency: "daily" as const,
-      priority: 0.8,
+      lastModified: restaurant.updatedAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.5,
     }));
 
     return [baseEntry, ...restaurantEntries];

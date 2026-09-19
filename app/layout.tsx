@@ -3,6 +3,7 @@ import { Be_Vietnam_Pro } from "next/font/google";
 import { AnalyticsPageViews } from "@/components/AnalyticsPageViews";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { ScrollTopButton } from "@/components/ScrollTopButton";
+import { getSiteUrl, SITE_BRAND } from "@/lib/site";
 import "./globals.css";
 
 const brandFont = Be_Vietnam_Pro({
@@ -11,30 +12,23 @@ const brandFont = Be_Vietnam_Pro({
   weight: ["400", "600", "700"],
 });
 
-const siteUrl =
-  process.env.AUTH_URL?.replace(/\/$/, "") ||
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : "https://vnexter-an-gi.vercel.app");
-
-const siteTitle = "Vnexter ăn gì";
+const siteUrl = getSiteUrl();
 const siteDescription =
   "Chọn nhanh quán ăn trưa quanh 219 Trung Kính, Cầu Giấy, Hà Nội — quay random, gợi ý theo thời tiết, xem đánh giá.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: siteTitle,
-    template: `%s · ${siteTitle}`,
+    default: SITE_BRAND,
+    template: `%s · ${SITE_BRAND}`,
   },
   description: siteDescription,
-  applicationName: siteTitle,
+  applicationName: SITE_BRAND,
   keywords: [
     "ăn trưa",
     "Trung Kính",
     "Cầu Giấy",
     "Hà Nội",
-    "Vnexter",
     "quán ăn",
     "gợi ý món trưa",
   ],
@@ -47,8 +41,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "vi_VN",
     url: siteUrl,
-    siteName: siteTitle,
-    title: siteTitle,
+    siteName: SITE_BRAND,
+    title: SITE_BRAND,
     description: siteDescription,
     images: [
       {
@@ -61,7 +55,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: siteTitle,
+    title: SITE_BRAND,
     description: siteDescription,
     images: [`${siteUrl}/og.png`],
   },

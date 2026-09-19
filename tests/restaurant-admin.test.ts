@@ -66,6 +66,20 @@ describe("validateRestaurantInput", () => {
     expect(bad.ok).toBe(false);
   });
 
+  it("rejects brand-first meta title", () => {
+    const bad = validateRestaurantInput({
+      name: "Bún bò Huế",
+      description: "Mô tả",
+      address: "Trung Kính",
+      imageUrl: "/restaurants/x.jpg",
+      metaTitle: "Vnexter ăn gì — Bún bò Huế",
+    });
+    expect(bad.ok).toBe(false);
+    if (!bad.ok) {
+      expect(bad.error).toContain("tên quán trước");
+    }
+  });
+
   it("accepts https image URLs and rejects data URLs", () => {
     const ok = validateRestaurantInput({
       name: "Test",
