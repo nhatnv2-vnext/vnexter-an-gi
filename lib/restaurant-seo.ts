@@ -4,6 +4,27 @@ import { getSiteUrl, SITE_BRAND } from "@/lib/site";
 const BRAND_FIRST_TITLE =
   /^(vnexter\s*(ăn\s*gì|an\s*gi)|ăn\s*gì\s*vnexter)/i;
 
+export const RESTAURANT_DETAIL_OPEN_GRAPH_TYPE = "article" as const;
+
+type OpenGraphWithType = Extract<
+  NonNullable<Metadata["openGraph"]>,
+  { type?: unknown }
+>;
+
+/** Narrow Metadata openGraph union to read og:type safely (e.g. in tests). */
+export function getRestaurantDetailOpenGraphType(
+  openGraph: Metadata["openGraph"] | undefined,
+): typeof RESTAURANT_DETAIL_OPEN_GRAPH_TYPE | undefined {
+  if (!openGraph || typeof openGraph !== "object" || !("type" in openGraph)) {
+    return undefined;
+  }
+
+  const type = (openGraph as OpenGraphWithType).type;
+  return type === RESTAURANT_DETAIL_OPEN_GRAPH_TYPE
+    ? RESTAURANT_DETAIL_OPEN_GRAPH_TYPE
+    : undefined;
+}
+
 /** Reject stored titles that lead with the site brand (SEO cannibalization). */
 export function isBrandFirstTitle(title: string): boolean {
   return BRAND_FIRST_TITLE.test(title.trim());
@@ -131,7 +152,7 @@ export function buildRestaurantPageMetadata(input: {
       canonical: canonicalPath,
     },
     openGraph: {
-      type: "article",
+      type: RESTAURANT_DETAIL_OPEN_GRAPH_TYPE,
       locale: "vi_VN",
       url: canonicalPath,
       siteName: SITE_BRAND,

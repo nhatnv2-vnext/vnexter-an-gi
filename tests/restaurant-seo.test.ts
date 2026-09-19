@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   buildRestaurantPageMetadata,
   buildRestaurantSeo,
+  getRestaurantDetailOpenGraphType,
   isBrandFirstTitle,
+  RESTAURANT_DETAIL_OPEN_GRAPH_TYPE,
   resolveRestaurantTitle,
 } from "@/lib/restaurant-seo";
 
@@ -66,7 +68,9 @@ describe("buildRestaurantPageMetadata", () => {
     });
     expect(metadata.keywords).toContain("Bún bò Huế");
     expect(metadata.keywords).not.toContain("Vnexter ăn gì");
-    expect(metadata.openGraph?.type).toBe("article");
+    expect(getRestaurantDetailOpenGraphType(metadata.openGraph)).toBe(
+      RESTAURANT_DETAIL_OPEN_GRAPH_TYPE,
+    );
     expect(metadata.alternates?.canonical).toBe("/restaurants/bun-bo-hue");
   });
 });
