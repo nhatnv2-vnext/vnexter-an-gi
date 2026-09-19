@@ -14,6 +14,8 @@ const siteUrl =
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : "https://vnexter-an-gi.vercel.app");
 
+const siteTitle = "Vnexter ăn gì";
+
 export const metadata: Metadata = {
   title: {
     absolute: "Vnexter ăn gì — Quán trưa quanh 219 Trung Kính",
@@ -24,6 +26,7 @@ export const metadata: Metadata = {
     canonical: siteUrl,
   },
   openGraph: {
+    siteName: siteTitle,
     title: "Vnexter ăn gì — Quán trưa quanh 219 Trung Kính",
     description:
       "Chọn nhanh quán ăn trưa quanh 219 Trung Kính. Quay random, lọc giá & món, gợi ý theo thời tiết.",
