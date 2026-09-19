@@ -286,7 +286,9 @@ export function RestaurantForm({ mode, restaurantId, initial }: Props) {
           <input
             value={metaTitle}
             onChange={(e) => setMetaTitle(e.target.value)}
-            placeholder={name ? `${name} · Vnexter ăn gì` : "Tiêu đề trên Google"}
+            placeholder={
+              name ? `${name} gần Trung Kính | Vnexter ăn gì` : "Tiêu đề trên Google"
+            }
             maxLength={70}
           />
           <span className="admin-field-hint">
